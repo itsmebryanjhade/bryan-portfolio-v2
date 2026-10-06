@@ -185,6 +185,7 @@ button { font:inherit; }
 .contact-route small { color:var(--muted); font:400 .68rem/1.5 var(--font-geist-mono),monospace; }
 .contact-route>b { font:400 1rem/1 var(--font-geist-mono),monospace; }
 .contact-console-foot { display:flex; justify-content:space-between; gap:1rem; padding:.85rem 1rem; border-top:1px solid var(--rule); color:var(--muted); font:500 .56rem/1.4 var(--font-geist-mono),monospace; letter-spacing:.05em; }
+.contact-console-links { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.45rem 1.25rem; }
 .contact-console-foot a:hover,.contact-console-foot a:focus-visible { color:var(--accent); }
 .contact-status { grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr auto; gap:1.5rem; padding:1rem 0; border-bottom:1px solid var(--rule); color:var(--muted); font:500 .62rem/1.4 var(--font-geist-mono),monospace; letter-spacing:.06em; text-transform:uppercase; }
 .contact-status span:first-child { color:var(--ink); }
@@ -265,6 +266,8 @@ button { font:inherit; }
   .contact-route { grid-template-columns:1.5rem 1fr auto; }
   .contact-status { grid-template-columns:1fr; gap:.55rem; }
   .contact-status a { overflow-wrap:anywhere; }
+  .contact-console-foot { align-items:flex-start; flex-direction:column; }
+  .contact-console-links { justify-content:flex-start; }
 }
 
 /* Monochrome identity system */

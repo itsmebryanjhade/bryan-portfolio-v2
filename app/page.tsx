@@ -52,6 +52,7 @@ export default function Home() {
             <div className="hero-personal-meta"><span>Philippines</span><span>BS Information Technology — AI PPD</span></div>
             <div className="hero-links" aria-label="Social and contact links">
               <a href="https://github.com/codebyjhade" target="_blank" rel="noreferrer"><svg className="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.29-1.24-1.63-1.24-1.63-1.02-.7.08-.69.08-.69 1.12.08 1.71 1.15 1.71 1.15 1 .1.89 2.03 3.4 1.5.1-.74.4-1.25.72-1.54-2.47-.28-5.07-1.24-5.07-5.5 0-1.22.44-2.21 1.15-2.99-.12-.28-.5-1.42.11-2.95 0 0 .94-.3 3.06 1.14a10.6 10.6 0 0 1 5.58 0c2.12-1.44 3.05-1.14 3.05-1.14.61 1.53.23 2.67.11 2.95.72.78 1.15 1.77 1.15 2.99 0 4.27-2.6 5.21-5.08 5.49.4.35.76 1.02.76 2.06v3.05c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z"/></svg><span>GitHub</span><span aria-hidden="true">↗</span></a>
+              <a href="https://www.linkedin.com/in/bryan-jhade-bugauisan-ebuan-b7b709441" target="_blank" rel="noreferrer"><svg className="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5.37 3.5A2.37 2.37 0 1 1 .63 3.5a2.37 2.37 0 0 1 4.74 0ZM.95 7.2h4.84V23H.95V7.2Zm7.59 0h4.64v2.16h.07c.65-1.22 2.23-2.51 4.59-2.51 4.9 0 5.81 3.23 5.81 7.43V23h-4.84v-7.73c0-1.84-.03-4.21-2.57-4.21-2.57 0-2.96 2-2.96 4.08V23H8.54V7.2Z"/></svg><span>LinkedIn</span><span aria-hidden="true">↗</span></a>
               <a href="mailto:bryanjhade.e@gmail.com"><svg className="social-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="1" fill="none" stroke="currentColor" strokeWidth="1.5"/><path d="m3.5 6 8.5 7 8.5-7" fill="none" stroke="currentColor" strokeWidth="1.5"/></svg><span>Email</span><span aria-hidden="true">↗</span></a>
             </div>
           </div>
@@ -157,7 +158,7 @@ export default function Home() {
             <a className="contact-route" href="mailto:bryanjhade.e@gmail.com?subject=Project%20collaboration%20with%20Bryan%20Jhade">
               <span className="contact-route-index">02</span><span><strong>Collaborate</strong><small>Web apps, interfaces, prototypes, and focused AI integrations</small></span><b aria-hidden="true">↗</b>
             </a>
-            <div className="contact-console-foot"><span>STATUS: READY</span><a href="https://github.com/codebyjhade" target="_blank" rel="noreferrer">GITHUB / CODEBYJHADE ↗</a></div>
+            <div className="contact-console-foot"><span>STATUS: READY</span><span className="contact-console-links"><a href="https://github.com/codebyjhade" target="_blank" rel="noreferrer">GITHUB / CODEBYJHADE ↗</a><a href="https://www.linkedin.com/in/bryan-jhade-bugauisan-ebuan-b7b709441" target="_blank" rel="noreferrer">LINKEDIN / BRYAN JHADE ↗</a></span></div>
           </div>
           <div className="contact-status" aria-label="Availability"><span><b aria-hidden="true" /> Available</span><span>Philippines / Remote</span><a href="mailto:bryanjhade.e@gmail.com">bryanjhade.e@gmail.com</a></div>
         </section>
