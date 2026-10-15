@@ -22,6 +22,20 @@ type Project = {
   status?: string;
 };
 
+const badges = [
+  { name: "Google AI Professional Certificate", issuer: "Google", image: "/images/badges/google-ai-professional-certificate.png" },
+  { name: "AI Fundamentals", issuer: "Google", image: "/images/badges/google-ai-fundamentals.png" },
+  { name: "AI for App Building", issuer: "Google", image: "/images/badges/google-ai-for-app-building.png" },
+  { name: "AI for App Deployment", issuer: "Google", image: "/images/badges/google-ai-for-app-deployment.png" },
+  { name: "AI for Data Analysis", issuer: "Google", image: "/images/badges/google-ai-for-data-analysis.png" },
+  { name: "AI for Research and Insights", issuer: "Google", image: "/images/badges/google-ai-for-research-and-insights.png" },
+  { name: "AI for Brainstorming and Planning", issuer: "Google", image: "/images/badges/google-ai-for-brainstorming-and-planning.png" },
+  { name: "AI for Writing and Communicating", issuer: "Google", image: "/images/badges/google-ai-for-writing-and-communicating.png" },
+  { name: "AI for Content Creation", issuer: "Google", image: "/images/badges/google-ai-for-content-creation.png" },
+  { name: "Prompt Like an Engineer", issuer: "Cisco Networking Academy", image: "/images/prompt-like-an-engineer-badge.png" },
+  { name: "Linux Unhatched", issuer: "Cisco Networking Academy", image: "/images/linux-unhatched-badge.png" },
+] as const;
+
 const projects: Project[] = [
   { index: "01", title: "Omnave", discipline: "AI study companion / PWA", description: "Turns course PDFs into study guides, spaced flashcards, practice quizzes, and document-aware AI conversations—with offline review and secure sync.", year: "2026", href: "https://omnave.vercel.app/", status: "Live beta", image: "/images/projects/omnave-preview-new.png", alt: "New Omnave AI study companion landing page", imageShape: "landscape", latest: true },
   { index: "02", title: "kisap.", discipline: "Private photo booth / Web app", description: "Captures four photos and the ten seconds around each moment, then creates a personalized strip and GIF entirely on the user's device.", year: "2026", href: "https://kisap.vercel.app/", status: "Live", image: "/images/projects/kisap-preview.png", alt: "Kisap private web photo booth landing page", imageShape: "landscape" },
@@ -135,10 +149,30 @@ export default function Home() {
               <span className="credential-meta"><span>DICT Region VIII · 2026</span><strong>Press Start: Game Development</strong><small>Certificate of participation</small></span>
               <span className="credential-arrow" aria-hidden="true">↗</span>
             </a>
-            <div className="credential-card credential-card-placeholder" aria-label="More credentials will be added later">
-              <span className="credential-placeholder-mark">+</span>
-              <span className="credential-meta"><span>Archive / Growing</span><strong>More credentials soon.</strong><small>A full credentials view will be added as the collection grows.</small></span>
-            </div>
+            <a className="credential-card" href="/certificates/bryan-ebuan-prompt-like-an-engineer.pdf" target="_blank" rel="noreferrer">
+              <span className="credential-image"><Image src="/images/prompt-like-an-engineer-certificate.png" alt="Prompt Like an Engineer certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
+              <span className="credential-meta"><span>Cisco Networking Academy / DICT–ITU · 2026</span><strong>Prompt Like an Engineer</strong><small className="credential-badge"><Image src="/images/prompt-like-an-engineer-badge.png" alt="" width={32} height={32} />Verified course badge</small></span>
+              <span className="credential-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a className="credential-card" href="/certificates/bryan-ebuan-linux-unhatched.pdf" target="_blank" rel="noreferrer">
+              <span className="credential-image"><Image src="/images/linux-unhatched-certificate.png" alt="Linux Unhatched certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
+              <span className="credential-meta"><span>Cisco Networking Academy / DICT–ITU · 2026</span><strong>Linux Unhatched</strong><small className="credential-badge"><Image src="/images/linux-unhatched-badge.png" alt="" width={32} height={32} />Verified course badge</small></span>
+              <span className="credential-arrow" aria-hidden="true">↗</span>
+            </a>
+            <details className="credential-card badge-archive">
+              <summary className="badge-archive-summary">
+                <span className="credential-placeholder-mark" aria-hidden="true">+</span>
+                <span className="credential-meta"><span>Archive / {badges.length} badges</span><strong>View all badges</strong><small>Google and Cisco Networking Academy</small></span>
+              </summary>
+              <div className="badge-grid">
+                {badges.map((badge) => (
+                  <figure className="badge-tile" key={badge.name}>
+                    <Image src={badge.image} alt="" width={120} height={120} sizes="120px" />
+                    <figcaption><strong>{badge.name}</strong><span>{badge.issuer}</span></figcaption>
+                  </figure>
+                ))}
+              </div>
+            </details>
           </div>
         </section>
 
