@@ -159,6 +159,11 @@ export default function Home() {
               <span className="credential-meta"><span>Cisco Networking Academy / DICT–ITU · 2026</span><strong>Prompt Like an Engineer</strong><small className="credential-badge"><Image src="/images/prompt-like-an-engineer-badge.png" alt="" width={32} height={32} />Verified course badge</small></span>
               <span className="credential-arrow" aria-hidden="true">↗</span>
             </a>
+            <a className="credential-card" href="/certificates/bryan-ebuan-dict-ai-quality-assurance.pdf" target="_blank" rel="noreferrer">
+              <span className="credential-image"><Image src="/images/dict-ai-quality-assurance-certificate.png" alt="DICT Region II AI Quality Assurance and Hallucination Mitigation participation certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
+              <span className="credential-meta"><span>DICT Region II · 2026</span><strong>AI Quality Assurance &amp; Hallucination Mitigation</strong><small>4-hour information session · Certificate of participation</small></span>
+              <span className="credential-arrow" aria-hidden="true">↗</span>
+            </a>
             <a className="credential-card" href="/certificates/bryan-ebuan-dict-game-development.pdf" target="_blank" rel="noreferrer">
               <span className="credential-image"><Image src="/images/dict-game-development-certificate.png" alt="DICT game development certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
               <span className="credential-meta"><span>DICT Region VIII · 2026</span><strong>Press Start: Game Development</strong><small>Certificate of participation</small></span>
