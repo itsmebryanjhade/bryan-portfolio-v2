@@ -149,14 +149,14 @@ export default function Home() {
               <span className="credential-meta"><span>Google / Coursera · 2026</span><strong>Google AI Professional Certificate</strong><small>8-course professional certificate</small></span>
               <span className="credential-arrow" aria-hidden="true">↗</span>
             </a>
-            <a className="credential-card" href="/certificates/bryan-ebuan-linux-unhatched.pdf" target="_blank" rel="noreferrer">
-              <span className="credential-image"><Image src="/images/linux-unhatched-certificate.png" alt="Linux Unhatched certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
-              <span className="credential-meta"><span>Cisco Networking Academy / DICT–ITU · 2026</span><strong>Linux Unhatched</strong><small className="credential-badge"><Image src="/images/linux-unhatched-badge.png" alt="" width={32} height={32} />Verified course badge</small></span>
-              <span className="credential-arrow" aria-hidden="true">↗</span>
-            </a>
             <a className="credential-card" href="/certificates/bryan-ebuan-prompt-like-an-engineer.pdf" target="_blank" rel="noreferrer">
               <span className="credential-image"><Image src="/images/prompt-like-an-engineer-certificate.png" alt="Prompt Like an Engineer certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
               <span className="credential-meta"><span>Cisco Networking Academy / DICT–ITU · 2026</span><strong>Prompt Like an Engineer</strong><small className="credential-badge"><Image src="/images/prompt-like-an-engineer-badge.png" alt="" width={32} height={32} />Verified course badge</small></span>
+              <span className="credential-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a className="credential-card" href="/certificates/bryan-ebuan-linux-unhatched.pdf" target="_blank" rel="noreferrer">
+              <span className="credential-image"><Image src="/images/linux-unhatched-certificate.png" alt="Linux Unhatched certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
+              <span className="credential-meta"><span>Cisco Networking Academy / DICT–ITU · 2026</span><strong>Linux Unhatched</strong><small className="credential-badge"><Image src="/images/linux-unhatched-badge.png" alt="" width={32} height={32} />Verified course badge</small></span>
               <span className="credential-arrow" aria-hidden="true">↗</span>
             </a>
             <a className="credential-card" href="/certificates/bryan-ebuan-dict-ai-quality-assurance.pdf" target="_blank" rel="noreferrer">
