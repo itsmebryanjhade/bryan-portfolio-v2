@@ -1,6 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getNavCounts } from "@/lib/content";
 import { Sidebar } from "./sidebar";
 
 const pathname = vi.hoisted(() => ({ value: "/" }));
@@ -22,7 +21,7 @@ describe("Sidebar", () => {
   it("shows counts for projects and certifications", () => {
     render(<Sidebar onSearch={() => {}} />);
     expect(within(screen.getByRole("link", { name: /^Projects/ })).getByText("7")).toBeInTheDocument();
-    expect(within(screen.getByRole("link", { name: /^Certifications/ })).getByText(String(getNavCounts().certifications))).toBeInTheDocument();
+    expect(within(screen.getByRole("link", { name: /^Certifications/ })).getByText("14")).toBeInTheDocument();
   });
 
   it("marks the current section for nested paths", () => {

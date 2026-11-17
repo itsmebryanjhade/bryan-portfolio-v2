@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 import { openPalette, Sidebar } from "./sidebar";
 import { profile } from "@/content/profile";
 
-const FOCUSABLE = 'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function MobileBar() {
   const pathname = usePathname();
@@ -26,6 +26,15 @@ export function MobileBar() {
     if (open) closeRef.current?.focus();
     else if (wasOpen.current) menuRef.current?.focus();
     wasOpen.current = open;
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
   }, [open]);
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -57,7 +66,7 @@ export function MobileBar() {
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen(true)}
-        className="inline-flex h-8 w-8 items-center justify-center rounded-nav border border-border text-muted transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-nav border border-border text-muted transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg"
       >
         <Menu size={16} strokeWidth={1.6} aria-hidden="true" />
       </button>
@@ -76,7 +85,7 @@ export function MobileBar() {
               type="button"
               aria-label="Close menu"
               onClick={() => setOpen(false)}
-              className="absolute right-3 top-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-nav text-muted hover:bg-hover hover:text-fg"
+              className="absolute right-3 top-3 z-10 inline-flex h-11 w-11 items-center justify-center rounded-nav text-muted hover:bg-hover hover:text-fg"
             >
               <X size={16} strokeWidth={1.6} aria-hidden="true" />
             </button>
