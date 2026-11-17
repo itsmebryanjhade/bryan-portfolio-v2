@@ -1,3 +1,4 @@
+import { GithubActivity } from "@/components/home/github-activity";
 import { Hero } from "@/components/home/hero";
 import { CertCard } from "@/components/certs/cert-card";
 import { ProjectCard } from "@/components/projects/project-card";
@@ -33,10 +34,7 @@ export default function Home() {
 
       <section aria-labelledby="home-github">
         <SectionHeader id="home-github" index="03" title="GitHub" href={GITHUB} linkLabel="@itsmebryanjhade" external />
-        {/* Task 7 replaces this fallback with <GithubActivity /> */}
-        <a href={GITHUB} target="_blank" rel="noreferrer" className="inline-block rounded-card border border-border bg-card px-4 py-3 text-sm text-muted transition-colors duration-150 hover:border-border-hover hover:text-fg">
-          View activity on GitHub ↗
-        </a>
+        <GithubActivity />
       </section>
     </div>
   );
