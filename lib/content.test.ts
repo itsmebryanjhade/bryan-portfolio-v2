@@ -66,7 +66,7 @@ describe("derived values", () => {
     expect(getStats().map((s) => s.label)).toEqual(["Projects shipped", "Credentials", "Started BSIT"]);
   });
   it("computes nav counts", () => {
-    expect(getNavCounts()).toEqual({ projects: 7, certifications: 6 });
+    expect(getNavCounts()).toEqual({ projects: 7, certifications: 14 });
   });
   it("detects empty lists", () => {
     expect(isEmpty([])).toBe(true);

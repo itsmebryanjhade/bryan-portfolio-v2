@@ -70,7 +70,7 @@ export function Sidebar({ onSearch, shortcut }: { onSearch: () => void; shortcut
                       href={item.href}
                       data-label={item.label}
                       aria-current={current ? "page" : undefined}
-                      className={`flex items-center gap-2.5 rounded-nav px-3 py-2 text-sm transition-colors duration-150 hover:bg-hover hover:text-fg ${
+                      className={`flex items-center gap-2.5 rounded-nav min-h-11 px-3 py-2 text-sm transition-colors duration-150 hover:bg-hover hover:text-fg ${
                         current ? "bg-hover text-fg" : "text-muted"
                       }`}
                     >

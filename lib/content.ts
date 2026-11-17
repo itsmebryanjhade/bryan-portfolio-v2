@@ -33,7 +33,7 @@ export function getStats(): { label: string; value: string }[] {
 }
 
 export function getNavCounts(): { projects: number; certifications: number } {
-  return { projects: projects.length, certifications: certifications.length };
+  return { projects: projects.length, certifications: getCredentialCount() };
 }
 
 export function isEmpty(list: ListItem[]): boolean {

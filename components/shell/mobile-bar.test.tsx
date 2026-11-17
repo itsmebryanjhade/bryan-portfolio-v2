@@ -38,4 +38,25 @@ describe("MobileBar", () => {
     rerender(<MobileBar />);
     expect(screen.queryByRole("dialog")).toBeNull();
   });
+
+  it("wraps Tab and Shift+Tab focus inside the dialog", () => {
+    render(<MobileBar />);
+    fireEvent.click(screen.getByRole("button", { name: /open menu/i }));
+    const dialog = screen.getByRole("dialog");
+    const els = Array.from(dialog.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'));
+    els[els.length - 1].focus();
+    fireEvent.keyDown(dialog, { key: "Tab" });
+    expect(document.activeElement).toBe(els[0]);
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(els[els.length - 1]);
+  });
+
+  it("locks body scroll while open and restores it on close", () => {
+    document.body.style.overflow = "auto";
+    render(<MobileBar />);
+    fireEvent.click(screen.getByRole("button", { name: /open menu/i }));
+    expect(document.body.style.overflow).toBe("hidden");
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+    expect(document.body.style.overflow).toBe("auto");
+  });
 });
