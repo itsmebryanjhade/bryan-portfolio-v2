@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col items-start px-5 py-24 sm:px-8">
-      <p className="font-serif text-8xl text-fg">404</p>
+      <p aria-hidden="true" className="font-serif text-8xl text-fg">404</p>
       <h1 className="mt-4 text-lg text-muted">This page could not be found.</h1>
       <Link
         href="/"

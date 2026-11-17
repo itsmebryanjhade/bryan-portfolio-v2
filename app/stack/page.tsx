@@ -17,8 +17,8 @@ export default function StackPage() {
       <SectionHeader index="01" title="Stack" />
       <div className="grid gap-4 sm:grid-cols-2">
         {categories.map((cat) => (
-          <section key={cat} aria-label={cat} className="rounded-card border border-border bg-card p-5">
-            <h2 className="font-mono text-[10px] uppercase tracking-[0.12em] text-faint">{cat}</h2>
+          <section key={cat} aria-labelledby={`stack-${cat.replace(/\W+/g, "-").toLowerCase()}`} className="rounded-card border border-border bg-card p-5">
+            <h3 id={`stack-${cat.replace(/\W+/g, "-").toLowerCase()}`} className="font-mono text-[10px] uppercase tracking-[0.12em] text-faint">{cat}</h3>
             <ul className="mt-3 flex list-none flex-wrap gap-2 p-0">
               {stack.filter((s) => s.category === cat).map((s) => (
                 <li key={s.name} className="rounded-pill border border-border bg-panel px-2.5 py-1 text-[13px] text-fg">
