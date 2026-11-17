@@ -1,19 +1,35 @@
 "use client";
 
-import { useEffect } from "react";
-type Theme = "light" | "dark";
+import { Moon, Sun } from "lucide-react";
+import { useState } from "react";
+import { applyTheme, readTheme, writeTheme, type Theme } from "@/lib/theme";
+
+function currentTheme(): Theme {
+  if (typeof document === "undefined") return "dark";
+  return document.documentElement.dataset.theme === "light" ? "light" : readTheme();
+}
 
 export function ThemeToggle() {
-  useEffect(() => {
-    const saved = window.localStorage.getItem("theme") as Theme | null;
-    const initial = saved ?? "dark";
-    document.documentElement.dataset.theme = initial;
-  }, []);
-  function toggleTheme() {
-    const current = document.documentElement.dataset.theme as Theme | undefined;
-    const next = current === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    window.localStorage.setItem("theme", next);
+  const [theme, setTheme] = useState<Theme>("dark");
+  const [mounted, setMounted] = useState(false);
+  if (!mounted && typeof window !== "undefined") {
+    // sync from the no-flash script's result on first client render
+    setMounted(true);
+    setTheme(currentTheme());
   }
-  return <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label="Toggle color theme"><span aria-hidden="true">◐</span><span className="theme-label">Theme</span></button>;
+
+  function toggle() {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    writeTheme(next);
+    setTheme(next);
+  }
+
+  const label = theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+  const Icon = theme === "dark" ? Sun : Moon;
+  return (
+    <button className="theme-toggle" type="button" onClick={toggle} aria-label={label} suppressHydrationWarning>
+      <Icon size={16} strokeWidth={1.6} aria-hidden="true" />
+    </button>
+  );
 }
