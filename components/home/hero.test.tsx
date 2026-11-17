@@ -27,8 +27,9 @@ describe("Hero", () => {
     expect(screen.getByRole("link", { name: /GitHub.*opens in a new tab/ })).toBeInTheDocument();
   });
 
-  it("external links announce the new tab", () => {
+  it("the mailto link has no external-arrow glyph", () => {
     render(<Hero />);
-    expect(screen.getByRole("link", { name: /GitHub.*opens in a new tab/ })).toBeInTheDocument();
+    const mail = screen.getByRole("link", { name: /^Email$/ });
+    expect(mail.textContent).not.toContain("↗");
   });
 });
