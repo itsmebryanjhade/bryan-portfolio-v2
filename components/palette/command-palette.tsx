@@ -4,9 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { buildItems, type PaletteItem } from "./items";
+import { FOCUSABLE } from "@/lib/focus";
 import { useShortcut } from "./use-shortcut";
 
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 const GROUPS: PaletteItem["group"][] = ["Pages", "Projects", "Actions"];
 
 export function CommandPalette() {
@@ -33,7 +33,7 @@ export function CommandPalette() {
     setOpen(false);
     const el = openerRef.current;
     openerRef.current = null;
-    el?.focus();
+    if (el?.isConnected) el.focus();
   }
 
   useShortcut(() => showRef.current());
@@ -76,7 +76,7 @@ export function CommandPalette() {
     openerRef.current = null;
     setOpen(false);
     // Restore focus first so actions that record the active element (terminal) see the real opener.
-    opener?.focus();
+    if (opener?.isConnected) opener.focus();
     item.run();
   }
 

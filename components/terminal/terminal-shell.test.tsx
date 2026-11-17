@@ -65,3 +65,13 @@ describe("TerminalShell", () => {
     await waitFor(() => expect(document.activeElement).toBe(opener));
   });
 });
+
+describe("TerminalShell derived output", () => {
+  it("whoami prints the profile role line", async () => {
+    const user = userEvent.setup();
+    render(<TerminalShell />);
+    openTerminal();
+    await user.type(screen.getByRole("textbox"), "whoami{Enter}");
+    expect(screen.getByRole("log")).toHaveTextContent(profile.roleLine);
+  });
+});

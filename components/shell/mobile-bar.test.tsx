@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MobileBar } from "./mobile-bar";
 
@@ -58,5 +58,31 @@ describe("MobileBar", () => {
     expect(document.body.style.overflow).toBe("hidden");
     fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
     expect(document.body.style.overflow).toBe("auto");
+  });
+
+  it("has a 44px search button that opens the palette", () => {
+    render(<MobileBar />);
+    const handler = vi.fn();
+    window.addEventListener("open-palette", handler);
+    const search = screen.getByRole("button", { name: /^search$/i });
+    expect(search.className).toMatch(/h-11/);
+    expect(search.className).toMatch(/w-11/);
+    fireEvent.click(search);
+    expect(handler).toHaveBeenCalledTimes(1);
+    window.removeEventListener("open-palette", handler);
+  });
+
+  it("drawer Search focuses the menu button before opening the palette", () => {
+    render(<MobileBar />);
+    const menu = screen.getByRole("button", { name: /open menu/i });
+    fireEvent.click(menu);
+    let focusedAtOpen: Element | null = null;
+    const handler = () => { focusedAtOpen = document.activeElement; };
+    window.addEventListener("open-palette", handler);
+    const dialog = screen.getByRole("dialog");
+    fireEvent.click(within(dialog).getByRole("button", { name: /search/i }));
+    window.removeEventListener("open-palette", handler);
+    expect(focusedAtOpen).toBe(menu);
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 });

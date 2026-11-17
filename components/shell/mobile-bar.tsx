@@ -2,11 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { openPalette, Sidebar } from "./sidebar";
+import { FOCUSABLE } from "@/lib/focus";
 import { profile } from "@/content/profile";
-
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function MobileBar() {
   const pathname = usePathname();
@@ -59,17 +58,22 @@ export function MobileBar() {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-panel px-4 py-2.5 lg:hidden">
       <span className="text-sm font-medium text-fg">{profile.name}</span>
-      <button
-        ref={menuRef}
-        type="button"
-        aria-label="Open menu"
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        onClick={() => setOpen(true)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-nav border border-border text-muted transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg"
-      >
-        <Menu size={16} strokeWidth={1.6} aria-hidden="true" />
-      </button>
+      <div className="flex items-center gap-2">
+        <button type="button" aria-label="Search" onClick={openPalette} className="inline-flex h-11 w-11 items-center justify-center rounded-nav border border-border text-muted transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg">
+          <Search size={16} strokeWidth={1.6} aria-hidden="true" />
+        </button>
+        <button
+          ref={menuRef}
+          type="button"
+          aria-label="Open menu"
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          onClick={() => setOpen(true)}
+          className="inline-flex h-11 w-11 items-center justify-center rounded-nav border border-border text-muted transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg"
+        >
+          <Menu size={16} strokeWidth={1.6} aria-hidden="true" />
+        </button>
+      </div>
       {open && (
         <div className="fixed inset-0 z-50" onKeyDown={onKeyDown}>
           <div className="absolute inset-0 bg-bg/70" onClick={() => setOpen(false)} aria-hidden="true" />
@@ -91,6 +95,9 @@ export function MobileBar() {
             </button>
             <Sidebar
               onSearch={() => {
+                // The drawer button unmounts on close, so hand focus to the menu button first:
+                // the palette records it as the opener and restores focus there.
+                menuRef.current?.focus();
                 setOpen(false);
                 openPalette();
               }}
