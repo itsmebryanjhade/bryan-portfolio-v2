@@ -1,6 +1,7 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { TerminalShell } from "@/components/terminal/terminal-shell";
 import { CommandPalette } from "./command-palette";
 
 const push = vi.hoisted(() => vi.fn());
@@ -101,5 +102,42 @@ describe("CommandPalette", () => {
     await user.keyboard("{Enter}");
     expect(handler).toHaveBeenCalledTimes(1);
     window.removeEventListener("open-terminal", handler);
+  });
+
+  it("shows No results outside the listbox", async () => {
+    const user = userEvent.setup();
+    render(<CommandPalette />);
+    ctrlK();
+    await user.type(screen.getByRole("combobox"), "zzzz");
+    expect(screen.queryAllByRole("option")).toHaveLength(0);
+    const status = screen.getByRole("status");
+    expect(status).toHaveTextContent("No results");
+    expect(screen.getByRole("listbox")).not.toContainElement(status);
+  });
+
+  it("resets selection to the first option when the filter changes", async () => {
+    const user = userEvent.setup();
+    render(<CommandPalette />);
+    ctrlK();
+    await user.keyboard("{ArrowDown}{ArrowDown}");
+    await user.type(screen.getByRole("combobox"), "e");
+    const opts = screen.getAllByRole("option");
+    expect(opts[0]).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("combobox")).toHaveAttribute("aria-activedescendant", opts[0].id);
+  });
+
+  it("returns focus to the original opener after Open terminal and closing the terminal", async () => {
+    const user = userEvent.setup();
+    render(<button>trigger</button>);
+    render(<CommandPalette />);
+    render(<TerminalShell />);
+    const trigger = screen.getByRole("button", { name: "trigger" });
+    trigger.focus();
+    ctrlK(trigger);
+    await user.type(screen.getByRole("combobox"), "terminal");
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("dialog", { name: /portfolio terminal/i })).toBeInTheDocument();
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
   });
 });
