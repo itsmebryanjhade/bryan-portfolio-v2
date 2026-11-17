@@ -16,7 +16,7 @@ export default function LinksPage() {
       <h1 className="sr-only">Links</h1>
       <SectionHeader index="01" title="Links" />
       {isEmpty(links) ? (
-        <EmptyState title="Links" body="" />
+        <EmptyState title="Links" body="Links coming soon." />
       ) : (
         <ListGroup items={links} />
       )}
