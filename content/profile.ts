@@ -16,7 +16,7 @@ export const profile: Profile = {
   ],
   email: "bryanjhade.e@gmail.com",
   socials: [
-    { label: "GitHub", href: "https://github.com/codebyjhade" },
+    { label: "GitHub", href: "https://github.com/itsmebryanjhade" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/bryan-jhade-bugauisan-ebuan-b7b709441" },
   ],
   availability: "Available for internships",
