@@ -1,8 +1,8 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useSyncExternalStore } from "react";
-import { applyTheme, writeTheme, type Theme } from "@/lib/theme";
+import { useLayoutEffect, useSyncExternalStore } from "react";
+import { applyTheme, readTheme, toggleTheme, type Theme } from "@/lib/theme";
 
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange);
@@ -17,15 +17,15 @@ export function ThemeToggle() {
   // Server and hydration render use "dark"; React re-syncs after hydration.
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  function toggle() {
-    const next: Theme = theme === "dark" ? "light" : "dark";
-    applyTheme(next);
-    writeTheme(next);
-  }
+  // Strict Mode's dev remount can clear data-theme; re-apply the stored theme before paint.
+  // No-op in production, where the inline script already set it.
+  useLayoutEffect(() => {
+    if (!document.documentElement.dataset.theme) applyTheme(readTheme());
+  }, []);
 
   const label = theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
   return (
-    <button className="theme-toggle" type="button" onClick={toggle} aria-label={label}>
+    <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={label}>
       {/* icons are swapped by CSS on [data-theme] so there is no wrong-icon flash */}
       <Sun className="icon-sun" size={16} strokeWidth={1.6} aria-hidden="true" />
       <Moon className="icon-moon" size={16} strokeWidth={1.6} aria-hidden="true" />
