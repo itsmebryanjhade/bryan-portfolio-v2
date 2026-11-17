@@ -72,8 +72,11 @@ export function CommandPalette() {
 
   function choose(item: PaletteItem | undefined) {
     if (!item) return;
-    setOpen(false);
+    const opener = openerRef.current;
     openerRef.current = null;
+    setOpen(false);
+    // Restore focus first so actions that record the active element (terminal) see the real opener.
+    opener?.focus();
     item.run();
   }
 
@@ -140,7 +143,6 @@ export function CommandPalette() {
           />
         </div>
         <div id="palette-listbox" role="listbox" aria-label="Results" className="max-h-[50vh] overflow-y-auto p-2">
-          {ordered.length === 0 && <p role="presentation" className="px-3 py-6 text-center text-sm text-muted">No results</p>}
           {GROUPS.map((g) => {
             const group = ordered.filter((i) => i.group === g);
             if (!group.length) return null;
@@ -167,6 +169,7 @@ export function CommandPalette() {
             );
           })}
         </div>
+        {ordered.length === 0 && <p role="status" className="px-3 py-6 text-center text-sm text-muted">No results</p>}
       </div>
     </div>
   );

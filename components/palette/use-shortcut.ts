@@ -29,6 +29,7 @@ export function useShortcut(onOpen: () => void): { label: ShortcutLabel } {
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      if (e.repeat) return;
       if (!(e.ctrlKey || e.metaKey) || e.altKey || e.key.toLowerCase() !== "k") return;
       if (isEditable(e.target)) return;
       e.preventDefault();
