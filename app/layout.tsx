@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
 import { Geist, JetBrains_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 import { Shell } from "@/components/shell/shell";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = JetBrains_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const newsreader = Newsreader({ variable: "--font-newsreader", subsets: ["latin"], style: ["normal", "italic"] });
 
-export const metadata: Metadata = { title: { default: "Bryan Jhade — Developer", template: "%s — Bryan Jhade" }, description: "The portfolio of Bryan Jhade: thoughtful digital design, front-end craft, and creative technology." };
+const description = "The portfolio of Bryan Jhade: thoughtful digital design, front-end craft, and creative technology.";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: { default: "Bryan Jhade — Developer", template: "%s — Bryan Jhade" },
+  description,
+  openGraph: { type: "website", siteName: "Bryan Jhade", title: "Bryan Jhade — Developer", description, images: [{ url: "/profile.png", alt: "Portrait of Bryan Jhade" }] },
+  twitter: { card: "summary", title: "Bryan Jhade — Developer", description, images: ["/profile.png"] },
+};
 
 const themeScript = `try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}`;
 
