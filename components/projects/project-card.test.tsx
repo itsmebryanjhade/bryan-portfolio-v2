@@ -17,6 +17,12 @@ describe("ProjectCard", () => {
     expect(screen.queryByTestId("stack-chips")).toBeNull();
   });
 
+  it("shows the year and lifts with a reduced-motion-safe transform", () => {
+    render(<ProjectCard project={get("omnave")} />);
+    expect(screen.getByText(new RegExp(`· ${get("omnave").year}`))).toBeInTheDocument();
+    expect(screen.getByRole("link").className).toMatch(/motion-safe:hover:-translate-y-px/);
+  });
+
   it("Omnave: internal detail link with stack chips", () => {
     render(<ProjectCard project={get("omnave")} />);
     expect(screen.getByRole("link")).toHaveAttribute("href", "/projects/omnave");

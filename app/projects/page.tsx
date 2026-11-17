@@ -3,7 +3,10 @@ import { ProjectCard } from "@/components/projects/project-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getProjects } from "@/lib/content";
 
-export const metadata: Metadata = { title: "Projects" };
+export const metadata: Metadata = {
+  title: "Projects",
+  description: "Selected projects by Bryan Jhade: web apps, team builds and experiments, with honest notes on what is shipped.",
+};
 
 export default function ProjectsPage() {
   return (
@@ -12,7 +15,7 @@ export default function ProjectsPage() {
       <SectionHeader index="01" title="Projects" />
       <ul className="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
         {getProjects().map((p) => (
-          <li key={p.slug} className="contents">
+          <li key={p.slug} className="flex">
             <ProjectCard project={p} />
           </li>
         ))}
