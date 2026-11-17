@@ -1,35 +1,34 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useState } from "react";
-import { applyTheme, readTheme, writeTheme, type Theme } from "@/lib/theme";
+import { useSyncExternalStore } from "react";
+import { applyTheme, writeTheme, type Theme } from "@/lib/theme";
 
-function currentTheme(): Theme {
-  if (typeof document === "undefined") return "dark";
-  return document.documentElement.dataset.theme === "light" ? "light" : readTheme();
+function subscribe(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  return () => observer.disconnect();
 }
 
+const getSnapshot = (): Theme => (document.documentElement.dataset.theme === "light" ? "light" : "dark");
+const getServerSnapshot = (): Theme => "dark";
+
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
-  if (!mounted && typeof window !== "undefined") {
-    // sync from the no-flash script's result on first client render
-    setMounted(true);
-    setTheme(currentTheme());
-  }
+  // Server and hydration render use "dark"; React re-syncs after hydration.
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   function toggle() {
     const next: Theme = theme === "dark" ? "light" : "dark";
     applyTheme(next);
     writeTheme(next);
-    setTheme(next);
   }
 
   const label = theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
-  const Icon = theme === "dark" ? Sun : Moon;
   return (
-    <button className="theme-toggle" type="button" onClick={toggle} aria-label={label} suppressHydrationWarning>
-      <Icon size={16} strokeWidth={1.6} aria-hidden="true" />
+    <button className="theme-toggle" type="button" onClick={toggle} aria-label={label}>
+      {/* icons are swapped by CSS on [data-theme] so there is no wrong-icon flash */}
+      <Sun className="icon-sun" size={16} strokeWidth={1.6} aria-hidden="true" />
+      <Moon className="icon-moon" size={16} strokeWidth={1.6} aria-hidden="true" />
     </button>
   );
 }
