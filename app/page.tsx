@@ -23,7 +23,7 @@ export default function Home() {
       </section>
 
       <section aria-labelledby="home-certs">
-        <SectionHeader id="home-certs" index="02" title="Certifications" href="/certifications" linkLabel={`All ${getCredentialCount()}`} />
+        <SectionHeader id="home-certs" index="02" title="Certifications" href="/certifications" linkLabel={`All ${getCredentialCount()}`} ariaLabel={`All ${getCredentialCount()} certifications`} />
         <div className="grid gap-4 sm:grid-cols-3">
           {getFeaturedCertifications().map((c) => (
             <CertCard key={c.slug} cert={c} />
