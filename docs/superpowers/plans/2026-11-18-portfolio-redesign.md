@@ -123,7 +123,7 @@
 - `app/page.tsx` (current projects, certs, badges and toolchain)
 - `app/omnave-dossier.tsx`
 - §6.3 and §6.6 of the spec
-- Repo URLs: look each project up on `github.com/codebyjhade`. If a repo isn't found, leave `repo` unset and list it in the commit message body.
+- Repo URLs: look each project up on `github.com/itsmebryanjhade`. If a repo isn't found, leave `repo` unset and list it in the commit message body.
 - Journey entries: 2025 Grade 12 HUMSS; 2026 OSC officer (Halalan); 2026 BSIT at MMDC. Mark the years with a `// TODO confirm with Bryan` comment.
 
 - [ ] **Step 1: Write the failing tests.**
@@ -259,14 +259,14 @@
 **Interfaces:**
 - Produces:
   - `type ContributionDay = { date: string; level: 0 | 1 | 2 | 3 | 4 }`
-  - `fetchContributions(user = "codebyjhade"): Promise<{ total: number; days: ContributionDay[] } | null>`. It never throws and returns `null` on a non-OK status, a network error or an unparsable body.
+  - `fetchContributions(user = "itsmebryanjhade"): Promise<{ total: number; days: ContributionDay[] } | null>`. It never throws and returns `null` on a non-OK status, a network error or an unparsable body.
   - `<GithubActivity />`
 
 **How it works:**
-- **Data source:** `https://github-contributions-api.jogruber.de/v4/codebyjhade?y=last`, fetched with `{ next: { revalidate: 86400 } }`. Its `contributions[].level` maps directly onto `level`, and `total.lastYear` gives the total.
+- **Data source:** `https://github-contributions-api.jogruber.de/v4/itsmebryanjhade?y=last`, fetched with `{ next: { revalidate: 86400 } }`. Its `contributions[].level` maps directly onto `level`, and `total.lastYear` gives the total.
 - **Graph:** a 7-row grid of cells whose opacity scales with level (token `fg` at 0, .2, .4, .65, .95).
 - **Summary:** a visually hidden line, "{total} contributions in the last year".
-- **Fallback:** when the fetch returns `null`, render only the link "View activity on GitHub ↗" to `https://github.com/codebyjhade`.
+- **Fallback:** when the fetch returns `null`, render only the link "View activity on GitHub ↗" to `https://github.com/itsmebryanjhade`.
 
 - [ ] **Step 1: Write the failing tests.** Mock `global.fetch` and check:
   - a 200 response with the sample payload gives `total` and `days.length` correct
