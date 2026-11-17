@@ -15,14 +15,15 @@ export async function GithubActivity() {
     );
   }
 
+  // dir="rtl" on the scroller makes it open scrolled to the newest weeks on narrow screens (CSS only, no client JS).
   // Rows are weekdays (Sunday first); pad so the first day lands on its weekday row.
   const first = data.days[0] ? new Date(`${data.days[0].date}T00:00:00Z`).getUTCDay() : 0;
 
   return (
-    <div className="rounded-card border border-border bg-card p-4">
-      <p className="sr-only">{data.total} contributions in the last year</p>
-      <div className="overflow-x-auto">
-        <div data-testid="contrib-grid" aria-hidden="true" className="grid w-max grid-flow-col grid-rows-7 gap-[3px]">
+    <div className="min-w-0 rounded-card border border-border bg-card p-4">
+      <p className="sr-only">{data.total.toLocaleString("en-US")} {data.total === 1 ? "contribution" : "contributions"} in the last year</p>
+      <div dir="rtl" className="overflow-x-auto">
+        <div dir="ltr" data-testid="contrib-grid" aria-hidden="true" className="grid w-max grid-flow-col grid-rows-7 gap-[3px]">
           {Array.from({ length: first }, (_, i) => (
             <span key={`pad-${i}`} className="size-[10px]" />
           ))}

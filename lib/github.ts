@@ -10,7 +10,7 @@ export async function fetchContributions(user = "itsmebryanjhade"): Promise<Cont
     const data = await res.json();
     const total = data?.total?.lastYear;
     const list = data?.contributions;
-    if (typeof total !== "number" || !Array.isArray(list)) return null;
+    if (!Number.isFinite(total) || !Array.isArray(list) || list.length === 0) return null;
     const days: ContributionDay[] = [];
     for (const d of list) {
       if (typeof d?.date !== "string" || ![0, 1, 2, 3, 4].includes(d?.level)) return null;
