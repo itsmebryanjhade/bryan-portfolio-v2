@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { badges } from "@/content/badges";
@@ -77,7 +77,8 @@ describe("derived values", () => {
 describe("content hygiene", () => {
   it("never references the wrong GitHub username", () => {
     const dir = join(process.cwd(), "content");
-    for (const f of readdirSync(dir)) {
+    for (const f of readdirSync(dir, { recursive: true }) as string[]) {
+      if (statSync(join(dir, f)).isDirectory()) continue;
       expect(readFileSync(join(dir, f), "utf8"), f).not.toContain("codebyjhade");
     }
   });
