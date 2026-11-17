@@ -35,4 +35,14 @@ describe("fetchContributions", () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("not json", { status: 200 })));
     expect(await fetchContributions()).toBeNull();
   });
+
+  it.each([
+    ["missing total", { contributions: payload.contributions }],
+    ["non-array contributions", { total: { lastYear: 1 }, contributions: "x" }],
+    ["out-of-range level", { total: { lastYear: 1 }, contributions: [{ date: "2025-11-16", count: 1, level: 7 }] }],
+    ["empty contributions", { total: { lastYear: 0 }, contributions: [] }],
+  ])("returns null on %s", async (_n, body) => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(body), { status: 200 })));
+    expect(await fetchContributions()).toBeNull();
+  });
 });
