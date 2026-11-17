@@ -41,7 +41,7 @@ export function Hero() {
         ))}
         <li>
           <a href={`mailto:${profile.email}`} className="text-muted transition-colors duration-150 hover:text-fg">
-            Email <span aria-hidden="true">↗</span>
+            Email
           </a>
         </li>
       </ul>

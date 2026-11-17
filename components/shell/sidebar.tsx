@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Mail, Search } from "lucide-react";
-import { ThemeToggle } from "@/app/theme-toggle";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { StatusDot } from "@/components/ui/status-dot";
 import { gear } from "@/content/gear";
 import { profile } from "@/content/profile";
