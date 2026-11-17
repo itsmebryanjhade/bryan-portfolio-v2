@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { profile } from "@/content/profile";
+import { FOCUSABLE } from "@/lib/focus";
+import { neofetch, stackOutput, whoami } from "./responses";
 import type { FormEvent, KeyboardEvent, MouseEvent } from "react";
 
 type Entry = { command?: string; output: string };
@@ -70,7 +72,7 @@ export function TerminalShell() {
       return;
     }
     if (event.key !== "Tab" || !dialogRef.current) return;
-    const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>("button:not([disabled]), input:not([disabled])"));
+    const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
     if (!focusable.length) return;
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
@@ -127,24 +129,13 @@ export function TerminalShell() {
       help: commandHelp,
       ls: "about/  certifications/  projects/  stack/  contact.link",
       pwd: "/home/jhade/portfolio",
-      whoami: "bryan-jhade\nDesigner + Developer · Philippines",
-      neofetch: `jhade@portfolio
----------------
-OS: BryanOS / Web
-Role: Designer + Developer
-Focus: Software · AI · Frontend
-Education: BS Information Technology — AI PPD
-Shell: portfolio-sh
-Status: Available`,
+      whoami: whoami(),
+      neofetch: neofetch(),
       focus: "software/  ai/  frontend/  security-lab/",
       work: "cd /home/jhade/portfolio/projects\nOpening projects…",
       omnave: "cd /home/jhade/portfolio/projects/omnave\nOpening the Omnave case study…",
       about: "cat /home/jhade/portfolio/about/profile.txt\nOpening about…",
-      stack: `ACTIVE TOOLCHAIN
-HTML / CSS              React / Next.js
-JavaScript / TypeScript Firebase / Supabase
-Python / FastAPI        Git / GitHub
-Tailwind CSS            Gemini / Groq APIs`,
+      stack: stackOutput(),
       credentials: "cd /home/jhade/portfolio/certifications\nOpening certifications…",
       contact: `mailto:${profile.email}\nOpening your mail app…`,
     };
