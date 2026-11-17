@@ -92,6 +92,33 @@ describe("CommandPalette", () => {
     expect(document.activeElement).toBe(trigger);
   });
 
+  it("Toggle theme still flips dark, light, dark when storage throws", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new Error("denied"); });
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("denied"); });
+    document.documentElement.dataset.theme = "dark";
+    render(<CommandPalette />);
+    for (const expected of ["light", "dark"]) {
+      ctrlK();
+      await user.type(screen.getByRole("combobox"), "toggle theme");
+      await user.keyboard("{Enter}");
+      expect(document.documentElement.dataset.theme).toBe(expected);
+    }
+    delete document.documentElement.dataset.theme;
+  });
+
+  it("closing with a disconnected opener does not throw and leaves the dialog closed", () => {
+    const trigger = document.createElement("button");
+    document.body.appendChild(trigger);
+    render(<CommandPalette />);
+    trigger.focus();
+    ctrlK(trigger);
+    trigger.remove();
+    expect(() => fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" })).not.toThrow();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.activeElement).toBe(document.body);
+  });
+
   it("Open terminal dispatches open-terminal", async () => {
     const user = userEvent.setup();
     const handler = vi.fn();

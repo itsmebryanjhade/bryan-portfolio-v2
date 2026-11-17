@@ -1,6 +1,6 @@
 import { profile } from "@/content/profile";
 import { getProjects } from "@/lib/content";
-import { applyTheme, readTheme, writeTheme } from "@/lib/theme";
+import { toggleTheme } from "@/lib/theme";
 import { NAV } from "@/components/shell/nav-items";
 
 export type PaletteItem = {
@@ -34,9 +34,7 @@ export function buildItems(push: (href: string) => void): PaletteItem[] {
       group: "Actions",
       label: "Toggle theme",
       run: () => {
-        const next = readTheme() === "dark" ? "light" : "dark";
-        applyTheme(next);
-        writeTheme(next);
+        toggleTheme();
       },
     },
     {
