@@ -10,12 +10,12 @@ import { gear } from "@/content/gear";
 import { profile } from "@/content/profile";
 import { resources } from "@/content/resources";
 import { getNavCounts, isEmpty } from "@/lib/content";
+import { useShortcutLabel } from "@/components/palette/use-shortcut";
 import { NAV } from "./nav-items";
 
 const counts = getNavCounts();
 const empty = { gear: isEmpty(gear), resources: isEmpty(resources) };
 
-/** Task 10 swaps this for the real label from its useShortcut hook. */
 export function ShortcutHint({ label = "Ctrl K" }: { label?: string }) {
   return (
     <kbd className="rounded-pill border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-faint">{label}</kbd>
@@ -32,6 +32,7 @@ function isCurrent(pathname: string, href: string) {
 
 export function Sidebar({ onSearch, shortcut }: { onSearch: () => void; shortcut?: string }) {
   const pathname = usePathname();
+  const platformLabel = useShortcutLabel();
   return (
     <div className="flex h-full flex-col gap-5 p-4">
       <div className="flex items-center gap-3">
@@ -51,7 +52,7 @@ export function Sidebar({ onSearch, shortcut }: { onSearch: () => void; shortcut
       >
         <Search size={16} strokeWidth={1.6} aria-hidden="true" />
         <span className="flex-1 text-left">Search</span>
-        <ShortcutHint label={shortcut} />
+        <ShortcutHint label={shortcut ?? platformLabel} />
       </button>
 
       <nav aria-label="Primary" className="flex flex-1 flex-col gap-5 overflow-y-auto">
