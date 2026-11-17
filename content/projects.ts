@@ -73,8 +73,8 @@ export const projects: Project[] = [
   {
     slug: "wholeturn",
     title: "Wholeturn",
-    tagline: "Bringing your day into view.",
-    description: "Bringing your day into view.",
+    tagline: "Track the roles in your day.",
+    description: "Keep a personal record of time across study, freelance work, family, and rest.",
     year: "2026",
     status: "Live",
     kind: "School project",

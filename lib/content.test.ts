@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { badges } from "@/content/badges";
@@ -71,5 +71,14 @@ describe("derived values", () => {
   it("detects empty lists", () => {
     expect(isEmpty([])).toBe(true);
     expect(isEmpty([{ name: "x", category: "y" }])).toBe(false);
+  });
+});
+
+describe("content hygiene", () => {
+  it("never references the wrong GitHub username", () => {
+    const dir = join(process.cwd(), "content");
+    for (const f of readdirSync(dir)) {
+      expect(readFileSync(join(dir, f), "utf8"), f).not.toContain("codebyjhade");
+    }
   });
 });
