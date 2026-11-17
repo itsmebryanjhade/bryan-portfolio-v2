@@ -35,7 +35,7 @@ export function Hero() {
         {profile.socials.map((s) => (
           <li key={s.label}>
             <a href={s.href} target="_blank" rel="noreferrer" className="text-muted transition-colors duration-150 hover:text-fg">
-              {s.label} <span aria-hidden="true">↗</span>
+              {s.label} <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span>
             </a>
           </li>
         ))}

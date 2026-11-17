@@ -1,6 +1,13 @@
 import Image from "next/image";
 import type { Certification } from "@/content/types";
 
+function issuerMark(issuer: string): string {
+  const first = issuer.split("/")[0].trim();
+  if (/^cs50$/i.test(first)) return "CS50";
+  if (/cisco/i.test(first)) return "CI";
+  return first.charAt(0).toUpperCase();
+}
+
 export function CertCard({ cert }: { cert: Certification }) {
   return (
     <a
@@ -19,10 +26,16 @@ export function CertCard({ cert }: { cert: Certification }) {
         />
       </div>
       <div className="p-4">
-        <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-faint">
-          {cert.issuer} · {cert.year}
+        <div className="flex items-center gap-2">
+          <span aria-hidden="true" className="flex h-[26px] min-w-[26px] items-center justify-center rounded-pill border border-border bg-panel px-1 font-mono text-[10px] text-muted">
+            {issuerMark(cert.issuer)}
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-faint">{cert.issuer} · {cert.year}</span>
         </div>
-        <h3 className="mt-1.5 text-[15px] font-medium leading-snug text-fg">{cert.title}</h3>
+        <h3 className="mt-2 text-[15px] font-medium leading-snug text-fg">
+          {cert.title}
+          <span className="sr-only"> (PDF, opens in a new tab)</span>
+        </h3>
       </div>
     </a>
   );

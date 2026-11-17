@@ -21,4 +21,14 @@ describe("Hero", () => {
     render(<Hero />);
     expect(screen.getByRole("link", { name: /GitHub/ })).toHaveAttribute("href", "https://github.com/itsmebryanjhade");
   });
+
+  it("external links announce the new tab", () => {
+    render(<Hero />);
+    expect(screen.getByRole("link", { name: /GitHub.*opens in a new tab/ })).toBeInTheDocument();
+  });
+
+  it("external links announce the new tab", () => {
+    render(<Hero />);
+    expect(screen.getByRole("link", { name: /GitHub.*opens in a new tab/ })).toBeInTheDocument();
+  });
 });

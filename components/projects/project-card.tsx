@@ -21,7 +21,10 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
       <div className="p-4">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-[15px] font-medium text-fg">{project.title}</h3>
+          <h3 className="text-[15px] font-medium text-fg">
+            {project.title}
+            {!project.hasDetail && <span className="sr-only"> (opens in a new tab)</span>}
+          </h3>
           <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
             {project.status === "Live" || project.status === "Live beta" ? <StatusDot /> : null}
             {project.status}
