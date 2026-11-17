@@ -129,3 +129,8 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Theme toggle icon: show the sun in dark theme, the moon in light theme */
+.theme-toggle .icon-moon { display: none; }
+[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+[data-theme="light"] .theme-toggle .icon-moon { display: block; }
