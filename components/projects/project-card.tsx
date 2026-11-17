@@ -5,7 +5,7 @@ import { StatusDot } from "@/components/ui/status-dot";
 
 const tag = "rounded-pill border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted";
 const cardCls =
-  "group block overflow-hidden rounded-card border border-border bg-card transition-colors duration-150 hover:border-border-hover hover:bg-hover";
+  "group block w-full overflow-hidden rounded-card border border-border bg-card transition-[color,background-color,border-color,transform] duration-150 hover:border-border-hover hover:bg-hover motion-safe:hover:-translate-y-px";
 
 export function ProjectCard({ project }: { project: Project }) {
   const body = (
@@ -27,7 +27,7 @@ export function ProjectCard({ project }: { project: Project }) {
           </h3>
           <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted">
             {project.status === "Live" || project.status === "Live beta" ? <StatusDot /> : null}
-            {project.status}
+            {project.status} · {project.year}
           </span>
         </div>
         <p className="mt-1 text-sm leading-6 text-muted">{project.tagline}</p>

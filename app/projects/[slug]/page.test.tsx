@@ -6,6 +6,7 @@ const notFound = vi.fn(() => {
 });
 vi.mock("next/navigation", () => ({ notFound: () => notFound() }));
 
+import { getProject } from "@/lib/content";
 import ProjectPage, { generateMetadata, generateStaticParams } from "./page";
 
 afterEach(() => {
@@ -18,6 +19,17 @@ const params = (slug: string) => ({ params: Promise.resolve({ slug }) });
 describe("project detail page", () => {
   it("statically generates only projects with detail pages", () => {
     expect(generateStaticParams().map((p) => p.slug).sort()).toEqual(["omnave", "osc-halalan-2026"]);
+  });
+
+  it("metadata uses the tagline as description and sets openGraph title", async () => {
+    const md = await generateMetadata(params("omnave"));
+    expect(md.title).toBe("Omnave");
+    expect(md.description).toBe(getProject("omnave")!.tagline);
+    expect(md.openGraph?.title).toBe("Omnave");
+  });
+
+  it("metadata is empty for an unknown slug", async () => {
+    expect(await generateMetadata(params("nope"))).toEqual({});
   });
 
   it("calls notFound for an unknown slug", async () => {

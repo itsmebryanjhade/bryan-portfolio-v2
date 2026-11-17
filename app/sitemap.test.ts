@@ -1,6 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import sitemap from "./sitemap";
 import robots from "./robots";
+
+vi.mock("@/content/blog", () => ({
+  posts: [{ slug: "hello-world", title: "Hello", date: "2026-01-01", summary: "s" }],
+  postModules: {},
+}));
 
 describe("sitemap", () => {
   const paths = sitemap().map((e) => new URL(e.url).pathname);
@@ -8,6 +13,9 @@ describe("sitemap", () => {
     for (const p of ["/", "/projects", "/projects/omnave", "/projects/osc-halalan-2026", "/blog", "/gear", "/links", "/resources", "/stack", "/certifications", "/about"]) {
       expect(paths).toContain(p);
     }
+  });
+  it("includes blog posts from content/blog", () => {
+    expect(paths).toContain("/blog/hello-world");
   });
   it("omits projects without a detail page", () => {
     expect(paths).not.toContain("/projects/kisap");
