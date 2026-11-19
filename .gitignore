@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# brainstorming mockups
+/.superpowers/
+
+# graphify's temporary lock while it rebuilds the graph
+graphify-out/.rebuild.lock

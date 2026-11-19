@@ -1,216 +1,88 @@
-import Image from "next/image";
-import { ThemeToggle } from "./theme-toggle";
-import { TerminalShell } from "./terminal-shell";
-import { SectionNav } from "./section-nav";
-import { OmnaveDossier } from "./omnave-dossier";
-import { ScrollReveal } from "./scroll-reveal";
-import { PrivateProjectDialog } from "./private-project-dialog";
+import { GithubActivity } from "@/components/home/github-activity";
+import { Hero } from "@/components/home/hero";
+import { NowStrip } from "@/components/home/now-strip";
+import Link from "next/link";
+import { AppShelf } from "@/components/home/app-shelf";
+import { standouts as featured } from "@/content/standouts";
+import { BlogList } from "@/components/home/blog-list";
+import { ExperienceList } from "@/components/home/experience-list";
+import { StackRows } from "@/components/home/stack-rows";
+import { posts } from "@/content/blog";
+import { experience } from "@/content/experience";
+import { CertShowcase } from "@/components/home/cert-showcase";
+import { SectionHeader } from "@/components/ui/section-header";
+import { getCredentialCount, getFeaturedCertifications } from "@/lib/content";
+import { PAGE_FRAME } from "@/components/ui/page-frame";
+import { Reveal } from "@/components/ui/reveal";
+import { fetchContributions, streaks } from "@/lib/github";
 
-type Project = {
-  index: string;
-  title: string;
-  discipline: string;
-  description: string;
-  year: string;
-  href?: string;
-  image: string;
-  alt: string;
-  imagePosition?: string;
-  imageShape: "portrait" | "landscape" | "wide" | "framori";
-  latest?: boolean;
-  private?: boolean;
-  status?: string;
-};
+/** Blog posts on the home page: the first is highlighted with its cover. */
+const HOME_POSTS = ["wrong-strand-right-direction", "i-started-with-a-chat-window", "my-first-hackathon-solo"];
+const homePosts = HOME_POSTS.map((slug) => posts.find((p) => p.slug === slug)).filter((p) => p !== undefined);
 
-const badges = [
-  { name: "Google AI Professional Certificate", issuer: "Google", image: "/images/badges/google-ai-professional-certificate.png" },
-  { name: "AI Fundamentals", issuer: "Google", image: "/images/badges/google-ai-fundamentals.png" },
-  { name: "AI for App Building", issuer: "Google", image: "/images/badges/google-ai-for-app-building.png" },
-  { name: "AI for App Deployment", issuer: "Google", image: "/images/badges/google-ai-for-app-deployment.png" },
-  { name: "AI for Data Analysis", issuer: "Google", image: "/images/badges/google-ai-for-data-analysis.png" },
-  { name: "AI for Research and Insights", issuer: "Google", image: "/images/badges/google-ai-for-research-and-insights.png" },
-  { name: "AI for Brainstorming and Planning", issuer: "Google", image: "/images/badges/google-ai-for-brainstorming-and-planning.png" },
-  { name: "AI for Writing and Communicating", issuer: "Google", image: "/images/badges/google-ai-for-writing-and-communicating.png" },
-  { name: "AI for Content Creation", issuer: "Google", image: "/images/badges/google-ai-for-content-creation.png" },
-  { name: "Prompt Like an Engineer", issuer: "Cisco Networking Academy", image: "/images/prompt-like-an-engineer-badge.png" },
-  { name: "Linux Unhatched", issuer: "Cisco Networking Academy", image: "/images/linux-unhatched-badge.png" },
-] as const;
 
-const projects: Project[] = [
-  { index: "01", title: "Omnave", discipline: "AI study companion / PWA", description: "Turns course PDFs into study guides, spaced flashcards, practice quizzes, and document-aware AI conversations—with offline review and secure sync.", year: "2026", href: "https://omnave.vercel.app/", status: "Live beta", image: "/images/projects/omnave-preview-new.png", alt: "New Omnave AI study companion landing page", imageShape: "landscape", latest: true },
-  { index: "02", title: "kisap.", discipline: "Private photo booth / Web app", description: "Captures four photos and the ten seconds around each moment, then creates a personalized strip and GIF entirely on the user's device.", year: "2026", href: "https://kisap.vercel.app/", status: "Live", image: "/images/projects/kisap-preview.png", alt: "Kisap private web photo booth landing page", imageShape: "landscape" },
-  { index: "03", title: "OSC Halalan 2026", discipline: "School election / Private", description: "A private school voting flow for student voter verification and ballots.", year: "2026", image: "/images/projects/halalan-2026-preview.png", alt: "OSC Halalan 2026 voter verification screen", private: true, imageShape: "landscape" },
-  { index: "04", title: "Framori", discipline: "Batch photo framing / Web app", description: "Matches photos with portrait or landscape event frames and exports the finished batch in one ZIP.", year: "2026", href: "https://framori.vercel.app/", image: "/images/projects/framori-preview.png", alt: "Framori batch photo framing website", imageShape: "framori" },
-];
 
-function SectionMarker({ index, children }: { index: string; children: React.ReactNode }) {
-  return <div className="section-marker" data-reveal aria-hidden="true"><span>{index} / {children}</span><span className="section-rule" /></div>;
-}
-
-export default function Home() {
+export default async function Home() {
+  // Same cached request as the GitHub section below, so this adds no extra fetch.
+  const contributions = await fetchContributions();
+  const activity = contributions ? { total: contributions.total, ...streaks(contributions.days) } : null;
   return (
-    <>
-      <a className="skip-link" href="#main">Skip to content</a>
-      <header className="masthead">
-        <a className="wordmark" href="#top" aria-label="Bryan Jhade, back to top">Bryan Jhade</a>
-        <SectionNav />
-        <ThemeToggle />
-      </header>
+    <div className={`${PAGE_FRAME} space-y-20`}>
+      <div className="space-y-14">
+        <Hero activity={activity} />
+        <NowStrip />
+      </div>
 
-      <main id="main">
-        <section className="hero page-grid" id="top" aria-labelledby="hero-title">
-          <div className="hero-name">
-            <h1 id="hero-title"><span>Bryan</span><span>Jhade.</span></h1>
-            <div className="identity-stack"><strong>Designer <i>+</i> Developer</strong></div>
-            <div className="hero-description"><p>I build software, interfaces, and digital systems while exploring AI, frontend engineering, and security.</p><p>Student builder focused on practical projects, thoughtful interfaces, and emerging technology.</p></div>
-            <div className="hero-personal-meta"><span>Philippines</span><span>BS Information Technology — AI PPD</span></div>
-            <div className="hero-links" aria-label="Social and contact links">
-              <a href="https://github.com/codebyjhade" target="_blank" rel="noreferrer"><svg className="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.29-1.24-1.63-1.24-1.63-1.02-.7.08-.69.08-.69 1.12.08 1.71 1.15 1.71 1.15 1 .1.89 2.03 3.4 1.5.1-.74.4-1.25.72-1.54-2.47-.28-5.07-1.24-5.07-5.5 0-1.22.44-2.21 1.15-2.99-.12-.28-.5-1.42.11-2.95 0 0 .94-.3 3.06 1.14a10.6 10.6 0 0 1 5.58 0c2.12-1.44 3.05-1.14 3.05-1.14.61 1.53.23 2.67.11 2.95.72.78 1.15 1.77 1.15 2.99 0 4.27-2.6 5.21-5.08 5.49.4.35.76 1.02.76 2.06v3.05c0 .3.2.65.77.54A11.1 11.1 0 0 0 12 .9Z"/></svg><span>GitHub</span><span aria-hidden="true">↗</span></a>
-              <a href="https://www.linkedin.com/in/bryan-jhade-bugauisan-ebuan-b7b709441" target="_blank" rel="noreferrer"><svg className="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5.37 3.5A2.37 2.37 0 1 1 .63 3.5a2.37 2.37 0 0 1 4.74 0ZM.95 7.2h4.84V23H.95V7.2Zm7.59 0h4.64v2.16h.07c.65-1.22 2.23-2.51 4.59-2.51 4.9 0 5.81 3.23 5.81 7.43V23h-4.84v-7.73c0-1.84-.03-4.21-2.57-4.21-2.57 0-2.96 2-2.96 4.08V23H8.54V7.2Z"/></svg><span>LinkedIn</span><span aria-hidden="true">↗</span></a>
-              <a href="mailto:bryanjhade.e@gmail.com"><svg className="social-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="1" fill="none" stroke="currentColor" strokeWidth="1.5"/><path d="m3.5 6 8.5 7 8.5-7" fill="none" stroke="currentColor" strokeWidth="1.5"/></svg><span>Email</span><span aria-hidden="true">↗</span></a>
-            </div>
-          </div>
+      <Reveal>
+        <section aria-labelledby="home-projects">
+          <SectionHeader id="home-projects" title="Selected work" count={featured.length} />
+          <AppShelf items={featured} />
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/projects"
+              className="group inline-flex items-center gap-1.5 rounded-pill border border-border px-4 py-2 text-sm text-muted transition-colors duration-150 hover:border-border-hover hover:text-fg"
+            >
+              Show more projects
 
-          <figure className="portrait-figure">
-            <div className="portrait-frame"><Image src="/profile.png" alt="Portrait of Bryan Jhade" fill priority unoptimized sizes="(max-width: 640px) 82vw, (max-width: 900px) 42vw, 28vw" /></div>
-            <figcaption><span>Fig. 001</span><span>Bryan Jhade</span></figcaption>
-          </figure>
-
-          <aside className="technical-rail" aria-label="Current profile details">
-            <div><span>Status</span><strong><b aria-hidden="true" /> Available</strong></div>
-            <div><span>Base</span><strong>Philippines</strong></div>
-            <div><span>Current</span><strong>BS Information Technology<br />AI PPD</strong></div>
-            <div><span>Focus</span><strong>Software<br />AI<br />Frontend</strong></div>
-          </aside>
-
-        </section>
-
-        <section className="selected-work-section page-grid" id="work" aria-labelledby="work-title">
-          <div className="hero-work-preview">
-            <div className="preview-heading" data-reveal><div className="chapter-heading"><span>02 /</span><h2 id="work-title">Selected Projects</h2></div><span className="section-rule" aria-hidden="true" /></div>
-            {projects.map((project) => {
-              const content = <><span>0{project.index}</span><strong>{project.title}{project.latest && <span className="project-latest">Latest</span>}</strong><em>{project.discipline}</em><small>{project.status ?? (project.private ? "Preview only" : project.year)}</small><b aria-hidden="true">{project.href ? "↗" : "◉"}</b><span className="work-hover-preview" aria-hidden="true"><span className="project-hover-copy"><span className="mono-label">Project / 0{project.index}</span><strong>{project.title}</strong><span>{project.discipline}</span><p>{project.description}</p>{project.latest && <span className="project-hover-tag">INSTALLABLE PWA</span>}{project.status && <span className="project-hover-tag">{project.status}</span>}{project.private && <span className="project-hover-tag">PRIVATE SYSTEM / PREVIEW ONLY</span>}</span><span className={`project-preview-image project-preview-image-${project.imageShape}`}><Image src={project.image} alt="" fill sizes="(max-width: 640px) 80vw, 22rem" style={{ objectPosition: project.imagePosition ?? "center top" }} /></span></span><span className="work-inline-preview" aria-hidden="true"><Image src={project.image} alt="" fill sizes="4rem" style={{ objectPosition: project.imagePosition ?? "center top" }} /></span></>;
-              return project.href
-                ? <a href={project.href} className="preview-project" data-reveal key={project.index} target="_blank" rel="noreferrer" aria-label={`${project.title} — ${project.discipline}, opens in a new tab`}><span className="preview-project-content">{content}</span><span className="visually-hidden">Preview: {project.alt}</span></a>
-                : <PrivateProjectDialog key={project.index}>{content}</PrivateProjectDialog>;
-            })}
+            </Link>
           </div>
         </section>
+      </Reveal>
 
-        <section className="about-section page-grid" id="about" aria-labelledby="about-title">
-          <div className="about-heading" data-reveal><div className="chapter-heading"><span>03 /</span><h2 id="about-title">About</h2></div><span className="section-rule" aria-hidden="true" /></div>
-          <p className="about-statement" data-reveal>I’m still learning.<br />I build to find out.</p>
-          <div className="about-copy">
-            <div className="about-note"><span>01 / The person</span><p>I’m Bryan Jhade Bugauisan-Ebuan, an Information Technology student from the Philippines. I move between code and visual design because I care how a product works and how it feels to use.</p></div>
-            <div className="about-note"><span>02 / Current questions</span><p>I’m exploring how AI can become useful software and how to build safer systems. Omnave makes that practical: turning PDFs into study kits has me thinking about clear flows, useful feedback, and reliability—not just the model’s response.</p><a className="about-project-link" href="https://omnave.vercel.app/" target="_blank" rel="noreferrer">See Omnave <span aria-hidden="true">↗</span></a></div>
-            <div className="about-note"><span>03 / Outside code</span><p>Photography and video keep my eye on composition, rhythm, and story. Those interests shape the details I notice when I build.</p></div>
-          </div>
-          <dl className="about-details">
-            <div><dt>Program</dt><dd>BS Information Technology<br />AI-Powered Product Development</dd></div>
-            <div><dt>School</dt><dd>Mapúa Malayan Digital College (MMDC)</dd></div>
-            <div><dt>Academic context</dt><dd>MMDC collaborates with Arizona State University (ASU)</dd></div>
-          </dl>
+      <Reveal>
+        <section aria-labelledby="home-experience">
+          <SectionHeader id="home-experience" title="Experience" count={experience.length} />
+          <ExperienceList items={experience} />
         </section>
+      </Reveal>
 
-        <section className="toolchain-strip page-grid" aria-labelledby="toolchain-title">
-          <h2 id="toolchain-title">Toolchain / in use</h2>
-          <ul aria-label="Tools and technologies Bryan uses">
-            <li>HTML / CSS</li>
-            <li>JavaScript / TypeScript</li>
-            <li>React / Next.js</li>
-            <li>Firebase / Supabase</li>
-            <li>Python / FastAPI</li>
-            <li>Git / GitHub</li>
-            <li>Tailwind CSS</li>
-            <li>Gemini / Groq APIs</li>
-          </ul>
+      <Reveal>
+        <section aria-labelledby="home-stack">
+          <SectionHeader id="home-stack" title="Stack" />
+          <StackRows />
         </section>
+      </Reveal>
 
-        <OmnaveDossier />
-
-        <section className="credentials-section page-grid" id="credentials" aria-labelledby="credentials-title">
-          <div className="section-chapter-heading credentials-heading" data-reveal>
-            <div className="chapter-heading"><span>05 /</span><h2 id="credentials-title">Selected Credentials</h2></div>
-            <span className="section-rule" aria-hidden="true" />
-          </div>
-          <div className="credentials-intro">
-            <p className="mono-label">Learning, applied</p>
-            <p className="credentials-statement">A few signals.<br />The work comes first.</p>
-            <p>Selected training that supports the way I design, build, and experiment.</p>
-          </div>
-          <div className="credential-grid">
-            <a className="credential-card" href="/certificates/bryan-ebuan-cs50x.pdf" target="_blank" rel="noreferrer">
-              <span className="credential-image"><Image src="/images/cs50x-certificate.png" alt="CS50x: Introduction to Computer Science certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
-              <span className="credential-meta"><span>CS50 / Harvard University · 2026</span><strong>CS50x: Introduction to Computer Science</strong><small>Ten problem sets and a final project</small></span>
-              <span className="credential-arrow" aria-hidden="true">↗</span>
-            </a>
-            <a className="credential-card" href="/certificates/bryan-ebuan-google-ai-professional.pdf" target="_blank" rel="noreferrer">
-              <span className="credential-image"><Image src="/images/google-ai-professional-certificate.png" alt="Google AI Professional Certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
-              <span className="credential-meta"><span>Google / Coursera · 2026</span><strong>Google AI Professional Certificate</strong><small>8-course professional certificate</small></span>
-              <span className="credential-arrow" aria-hidden="true">↗</span>
-            </a>
-            <a className="credential-card" href="/certificates/bryan-ebuan-prompt-like-an-engineer.pdf" target="_blank" rel="noreferrer">
-              <span className="credential-image"><Image src="/images/prompt-like-an-engineer-certificate.png" alt="Prompt Like an Engineer certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
-              <span className="credential-meta"><span>Cisco Networking Academy / DICT–ITU · 2026</span><strong>Prompt Like an Engineer</strong><small className="credential-badge"><Image src="/images/prompt-like-an-engineer-badge.png" alt="" width={32} height={32} />Verified course badge</small></span>
-              <span className="credential-arrow" aria-hidden="true">↗</span>
-            </a>
-            <a className="credential-card" href="/certificates/bryan-ebuan-linux-unhatched.pdf" target="_blank" rel="noreferrer">
-              <span className="credential-image"><Image src="/images/linux-unhatched-certificate.png" alt="Linux Unhatched certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
-              <span className="credential-meta"><span>Cisco Networking Academy / DICT–ITU · 2026</span><strong>Linux Unhatched</strong><small className="credential-badge"><Image src="/images/linux-unhatched-badge.png" alt="" width={32} height={32} />Verified course badge</small></span>
-              <span className="credential-arrow" aria-hidden="true">↗</span>
-            </a>
-            <a className="credential-card" href="/certificates/bryan-ebuan-dict-ai-quality-assurance.pdf" target="_blank" rel="noreferrer">
-              <span className="credential-image"><Image src="/images/dict-ai-quality-assurance-certificate.png" alt="DICT Region II AI Quality Assurance and Hallucination Mitigation participation certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
-              <span className="credential-meta"><span>DICT Region II · 2026</span><strong>AI Quality Assurance &amp; Hallucination Mitigation</strong><small>4-hour information session · Certificate of participation</small></span>
-              <span className="credential-arrow" aria-hidden="true">↗</span>
-            </a>
-            <a className="credential-card" href="/certificates/bryan-ebuan-dict-game-development.pdf" target="_blank" rel="noreferrer">
-              <span className="credential-image"><Image src="/images/dict-game-development-certificate.png" alt="DICT game development certificate awarded to Bryan Jhade Ebuan" fill sizes="(max-width: 640px) 100vw, 32vw" /></span>
-              <span className="credential-meta"><span>DICT Region VIII · 2026</span><strong>Press Start: Game Development</strong><small>Certificate of participation</small></span>
-              <span className="credential-arrow" aria-hidden="true">↗</span>
-            </a>
-            <details className="credential-card badge-archive">
-              <summary className="badge-archive-summary">
-                <span className="credential-placeholder-mark" aria-hidden="true">+</span>
-                <span className="credential-meta"><span>Archive / {badges.length} badges</span><strong>View all badges</strong><small>Google and Cisco Networking Academy</small></span>
-              </summary>
-              <div className="badge-grid">
-                {badges.map((badge) => (
-                  <figure className="badge-tile" key={badge.name}>
-                    <Image src={badge.image} alt="" width={120} height={120} sizes="120px" />
-                    <figcaption><strong>{badge.name}</strong><span>{badge.issuer}</span></figcaption>
-                  </figure>
-                ))}
-              </div>
-            </details>
-          </div>
+      <Reveal>
+        <section aria-labelledby="home-certs">
+          <SectionHeader id="home-certs" title="Certifications" count={getCredentialCount()} />
+          <CertShowcase certs={getFeaturedCertifications()} more={getCredentialCount() - getFeaturedCertifications().length} />
         </section>
+      </Reveal>
 
-        <section className="contact-section page-grid" id="contact" aria-labelledby="contact-title">
-          <SectionMarker index="06">Contact</SectionMarker>
-          <div className="contact-statement" data-reveal>
-            <p className="mono-label contact-kicker">Open channel / 2026</p>
-            <h2 id="contact-title">Bring the problem.<br />Let’s find the signal.</h2>
-            <p>I care about useful ideas, clear interfaces, and software that earns its place. If that sounds like what you need, send the first signal.</p>
-          </div>
-          <div className="contact-console" data-reveal aria-label="Choose a contact route">
-            <div className="contact-console-bar"><span><i /><i /><i /></span><span>jhade@portfolio:~/contact</span><span>LOCAL / SECURE</span></div>
-            <p className="contact-command"><span>guest@portfolio:~$</span> select --route</p>
-            <a className="contact-route" href="mailto:bryanjhade.e@gmail.com?subject=Role%20opportunity%20for%20Bryan%20Jhade">
-              <span className="contact-route-index">01</span><span><strong>Hire</strong><small>Junior frontend, full-stack, or AI-powered product roles</small></span><b aria-hidden="true">↗</b>
-            </a>
-            <a className="contact-route" href="mailto:bryanjhade.e@gmail.com?subject=Project%20collaboration%20with%20Bryan%20Jhade">
-              <span className="contact-route-index">02</span><span><strong>Collaborate</strong><small>Web apps, interfaces, prototypes, and focused AI integrations</small></span><b aria-hidden="true">↗</b>
-            </a>
-            <div className="contact-console-foot"><span>STATUS: READY</span><span className="contact-console-links"><a href="https://github.com/codebyjhade" target="_blank" rel="noreferrer">GITHUB / CODEBYJHADE ↗</a><a href="https://www.linkedin.com/in/bryan-jhade-bugauisan-ebuan-b7b709441" target="_blank" rel="noreferrer">LINKEDIN / BRYAN JHADE ↗</a></span></div>
-          </div>
-          <div className="contact-status" aria-label="Availability"><span><b aria-hidden="true" /> Available</span><span>Philippines / Remote</span><a href="mailto:bryanjhade.e@gmail.com">bryanjhade.e@gmail.com</a></div>
+      <Reveal>
+        <section aria-labelledby="home-blog">
+          <SectionHeader id="home-blog" title="Blog" count={posts.length} />
+          <BlogList posts={homePosts} />
         </section>
-      </main>
+      </Reveal>
 
-      <footer className="footer"><span>© 2026 Bryan Jhade</span><span>Design × Build × Experiment</span><a href="#top">Back to top ↑</a></footer>
-      <TerminalShell />
-      <ScrollReveal />
-    </>
+      <Reveal>
+        <section aria-labelledby="home-github">
+          <SectionHeader id="home-github" title="GitHub" />
+          <GithubActivity />
+        </section>
+      </Reveal>
+    </div>
   );
 }
