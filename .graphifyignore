@@ -1,0 +1,5 @@
+﻿# keep the graph focused on the portfolio source
+.claude/
+tmp/
+public/
+
