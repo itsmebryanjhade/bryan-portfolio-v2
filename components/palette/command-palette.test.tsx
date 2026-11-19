@@ -55,6 +55,16 @@ describe("CommandPalette", () => {
     expect(opts[0]).toHaveTextContent("Omnave");
   });
 
+  it("finds blog posts and opens them", async () => {
+    const user = userEvent.setup();
+    render(<CommandPalette />);
+    ctrlK();
+    await user.type(screen.getByRole("combobox"), "wrong strand");
+    expect(screen.getByRole("group", { name: "Posts" })).toBeInTheDocument();
+    await user.keyboard("{Enter}");
+    expect(push).toHaveBeenCalledWith("/blog/wrong-strand-right-direction");
+  });
+
   it("ArrowDown then Enter runs the item", async () => {
     const user = userEvent.setup();
     render(<CommandPalette />);
@@ -131,14 +141,14 @@ describe("CommandPalette", () => {
     window.removeEventListener("open-terminal", handler);
   });
 
-  it("shows No results outside the listbox", async () => {
+  it("shows an empty message outside the listbox", async () => {
     const user = userEvent.setup();
     render(<CommandPalette />);
     ctrlK();
     await user.type(screen.getByRole("combobox"), "zzzz");
     expect(screen.queryAllByRole("option")).toHaveLength(0);
     const status = screen.getByRole("status");
-    expect(status).toHaveTextContent("No results");
+    expect(status).toHaveTextContent(/nothing for .zzzz./i);
     expect(screen.getByRole("listbox")).not.toContainElement(status);
   });
 

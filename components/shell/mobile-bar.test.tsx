@@ -60,16 +60,12 @@ describe("MobileBar", () => {
     expect(document.body.style.overflow).toBe("auto");
   });
 
-  it("has a 44px search button that opens the palette", () => {
+  it("has a 44px menu button and no search in the bar (search is in the menu)", () => {
     render(<MobileBar />);
-    const handler = vi.fn();
-    window.addEventListener("open-palette", handler);
-    const search = screen.getByRole("button", { name: /^search$/i });
-    expect(search.className).toMatch(/h-11/);
-    expect(search.className).toMatch(/w-11/);
-    fireEvent.click(search);
-    expect(handler).toHaveBeenCalledTimes(1);
-    window.removeEventListener("open-palette", handler);
+    const menu = screen.getByRole("button", { name: /open menu/i });
+    expect(menu.className).toMatch(/h-11/);
+    expect(menu.className).toMatch(/w-11/);
+    expect(within(screen.getByRole("banner")).queryByRole("button", { name: /^search$/i })).toBeNull();
   });
 
   it("drawer Search focuses the menu button before opening the palette", () => {
@@ -84,5 +80,45 @@ describe("MobileBar", () => {
     window.removeEventListener("open-palette", handler);
     expect(focusedAtOpen).toBe(menu);
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("opens the side panel from the left menu button and closes from inside it", () => {
+    render(<MobileBar />);
+    const menu = screen.getByRole("button", { name: /open menu/i });
+    fireEvent.click(menu);
+    expect(menu).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: /close menu/i }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("shows the pixel face (home) in the bar, not the name", () => {
+    render(<MobileBar />);
+    const bar = screen.getByRole("banner");
+    expect(within(bar).getByRole("link", { name: /home/i })).toHaveAttribute("href", "/");
+    expect(within(bar).queryByText("Jhade")).toBeNull();
+  });
+
+  it("marks the current page in the menu sheet", () => {
+    pathname.value = "/projects";
+    render(<MobileBar />);
+    fireEvent.click(screen.getByRole("button", { name: /open menu/i }));
+    expect(within(screen.getByRole("dialog")).getByRole("link", { name: /projects/i })).toHaveAttribute("aria-current", "page");
+  });
+
+  it("stays pinned to the top while the page scrolls", () => {
+    render(<MobileBar />);
+    expect(screen.getByRole("banner").className).toMatch(/sticky top-0/);
+  });
+
+  it("keeps the panel briefly to slide it out after closing", () => {
+    vi.useFakeTimers();
+    render(<MobileBar />);
+    fireEvent.click(screen.getByRole("button", { name: /open menu/i }));
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.getByLabelText("Site menu").className).toMatch(/sheet-slide-out/);
+    act(() => vi.advanceTimersByTime(300));
+    expect(screen.queryByLabelText("Site menu")).toBeNull();
+    vi.useRealTimers();
   });
 });

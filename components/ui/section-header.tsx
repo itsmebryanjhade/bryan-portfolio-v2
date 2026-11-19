@@ -1,27 +1,18 @@
-import Link from "next/link";
+type Props = {
+  id?: string;
+  title: string;
+  /** Optional count shown on the right, e.g. 3 -> "03". */
+  count?: number;
+};
 
-type Props = { ariaLabel?: string; id?: string; index: string; title: string; href?: string; linkLabel?: string; external?: boolean };
-
-export function SectionHeader({ ariaLabel, id, index, title, href, linkLabel, external }: Props) {
-  const label = (
-    <>
-      {linkLabel}
-      <span aria-hidden="true"> {external ? "↗" : "→"}</span>
-      {external && <span className="sr-only"> (opens in a new tab)</span>}
-    </>
-  );
-  const cls = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted transition-colors duration-150 hover:text-fg";
+/** Quiet section label: small grey text on the left, an optional count on the right. */
+export function SectionHeader({ id, title, count }: Props) {
   return (
-    <div className="mb-4 flex items-baseline justify-between gap-4">
-      <h2 id={id} className="font-mono text-[11px] uppercase tracking-[0.14em] text-faint">
-        {index} — {title}
+    <div className="mb-3 flex items-baseline justify-between gap-4">
+      <h2 id={id} className="text-sm font-normal text-faint">
+        {title}
       </h2>
-      {href &&
-        (external ? (
-          <a href={href} target="_blank" rel="noreferrer" aria-label={ariaLabel} className={cls}>{label}</a>
-        ) : (
-          <Link href={href} aria-label={ariaLabel} className={cls}>{label}</Link>
-        ))}
+      {count !== undefined && <span className="font-mono text-xs text-faint">{String(count).padStart(2, "0")}</span>}
     </div>
   );
 }
