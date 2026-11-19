@@ -1,7 +1,7 @@
 # Graph Report - bryan-portfolio  (2026-11-19)
 
 ## Corpus Check
-- 141 files · ~55,705 words
+- 141 files · ~55,765 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 3, .ico 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `35591fb4`
+- Built from commit: `79182b13`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -64,8 +64,8 @@
   docs/superpowers/plans/2026-11-18-portfolio-redesign.md → components/shell/shell.tsx
 - `Task 10: Command palette and terminal integration` --references--> `Shell()`  [INFERRED]
   docs/superpowers/plans/2026-11-18-portfolio-redesign.md → components/shell/shell.tsx
-- `Task 4: App shell with sidebar and mobile drawer` --references--> `ThemeToggle()`  [INFERRED]
-  docs/superpowers/plans/2026-11-18-portfolio-redesign.md → components/theme/theme-toggle.tsx
+- `Task 3: Content data and derived stats` --references--> `getStats()`  [INFERRED]
+  docs/superpowers/plans/2026-11-18-portfolio-redesign.md → lib/content.ts
 
 ## Import Cycles
 - None detected.
@@ -157,7 +157,7 @@ Cohesion: 0.40
 Nodes (4): Adding a blog post, Bryan Jhade — Portfolio, Commands, Editing content
 
 ## Knowledge Gaps
-- **10 isolated node(s):** `@mdx-js/loader`, `@mdx-js/react`, `@types/mdx`, `@tailwindcss/postcss`, `@types/node` (+5 more)
+- **10 isolated node(s):** `jsdom`, `@mdx-js/loader`, `@mdx-js/react`, `tailwindcss`, `@tailwindcss/postcss` (+5 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 210 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -166,7 +166,7 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `next` connect `app/page.tsx` to `sidebar.tsx`, `theme-toggle.tsx`, `projects/[slug]/page.tsx`, `layout.tsx`, `links/page.tsx`, `gear-grid.tsx`, `projects/page.tsx`, `app/page.tsx`, `content.ts`, `package.json`, `terminal-shell.tsx`, `next.config.ts`?**
   _High betweenness centrality (0.202) - this node is a cross-community bridge._
-- **What connects `@mdx-js/loader`, `@mdx-js/react`, `@types/mdx` to the rest of the system?**
+- **What connects `jsdom`, `@mdx-js/loader`, `@mdx-js/react` to the rest of the system?**
   _10 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Portfolio Redesign: "Clean Pro"` be split into smaller, more focused modules?**
   _Cohesion score 0.08333333333333333 - nodes in this community are weakly interconnected._
