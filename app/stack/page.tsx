@@ -1,34 +1,52 @@
 import type { Metadata } from "next";
-import { SectionHeader } from "@/components/ui/section-header";
 import { stack } from "@/content/stack";
 import type { StackItem } from "@/content/types";
+import { PAGE_FRAME } from "@/components/ui/page-frame";
+import { BackButton } from "@/components/ui/back-button";
+import { ToolTile } from "@/components/ui/tool-tile";
 
 export const metadata: Metadata = {
   title: "Stack",
   description: "Languages, frameworks and tools Bryan Jhade builds with.",
 };
 
-const categories: StackItem["category"][] = ["Frontend", "Backend & data", "AI", "Tools"];
+const categories: StackItem["category"][] = ["Languages", "Frontend", "Backend & data", "AI", "Tools"];
+
+const slug = (s: string) => `stack-${s.replace(/\W+/g, "-").toLowerCase()}`;
 
 export default function StackPage() {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
-      <h1 className="sr-only">Stack</h1>
-      <SectionHeader index="01" title="Stack" />
-      <div className="grid gap-4 sm:grid-cols-2">
-        {categories.map((cat) => (
-          <section key={cat} aria-labelledby={`stack-${cat.replace(/\W+/g, "-").toLowerCase()}`} className="rounded-card border border-border bg-card p-5">
-            <h3 id={`stack-${cat.replace(/\W+/g, "-").toLowerCase()}`} className="font-mono text-[10px] uppercase tracking-[0.12em] text-faint">{cat}</h3>
-            <ul className="mt-3 flex list-none flex-wrap gap-2 p-0">
-              {stack.filter((s) => s.category === cat).map((s) => (
-                <li key={s.name} className="rounded-pill border border-border bg-panel px-2.5 py-1 text-[13px] text-fg">
-                  {s.name}
-                </li>
+    <div className={PAGE_FRAME}>
+      <BackButton />
+      <h1 className="text-3xl font-medium leading-tight tracking-tight text-fg">
+        What I build with
+      </h1>
+      <p className="mt-3 text-sm text-muted">
+        What I picked up from my courses, certificates and own projects. Hover a tool to see where it came from.
+      </p>
+      <p className="mt-5 flex items-center gap-2 text-xs text-faint">
+        <span aria-hidden="true" className="inline-block h-3.5 w-6 rounded-[5px] border border-dashed border-border-hover" />
+        Learning now in Meta&apos;s full-stack courses
+      </p>
+
+      {categories.map((cat) => {
+        const items = stack.filter((s) => s.category === cat);
+        return (
+          <section key={cat} aria-labelledby={slug(cat)} className="mt-12">
+            <div className="mb-3 flex items-baseline justify-between">
+              <h2 id={slug(cat)} className="text-xs text-faint">
+                {cat}
+              </h2>
+              <span className="font-mono text-[11px] text-faint">{String(items.length).padStart(2, "0")}</span>
+            </div>
+            <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-4">
+              {items.map((s) => (
+                <ToolTile key={s.name} item={s} />
               ))}
             </ul>
           </section>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }

@@ -1,25 +1,27 @@
 import type { Metadata } from "next";
-import { EmptyState } from "@/components/ui/empty-state";
-import { ListGroup } from "@/components/ui/list-group";
+import { GearGrid } from "@/components/gear/gear-grid";
 import { SectionHeader } from "@/components/ui/section-header";
 import { gear } from "@/content/gear";
-import { isEmpty } from "@/lib/content";
+import { PAGE_FRAME } from "@/components/ui/page-frame";
+import { BackButton } from "@/components/ui/back-button";
 
 export const metadata: Metadata = {
   title: "Gear",
-  description: "Hardware and software Bryan Jhade uses.",
+  description: "The laptop, monitor, keyboard and desk setup Bryan Jhade builds with.",
 };
 
 export default function GearPage() {
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
-      <h1 className="sr-only">Gear</h1>
-      <SectionHeader index="01" title="Gear" />
-      {isEmpty(gear) ? (
-        <EmptyState title="Setup list coming soon" body="My hardware and software setup will be listed here." />
-      ) : (
-        <ListGroup items={gear} />
-      )}
+    <div className={PAGE_FRAME}>
+      <BackButton />
+      <h1 className="text-3xl font-medium leading-tight tracking-tight text-fg">What&apos;s on my desk</h1>
+      <p className="mt-3 text-sm text-muted">The setup I build on every day, from the laptop to the lamp.</p>
+      {gear.map((group) => (
+        <section key={group.title} aria-labelledby={`gear-${group.title}`} className="mt-12">
+          <SectionHeader id={`gear-${group.title}`} title={group.title} count={group.items.length} />
+          <GearGrid items={group.items} />
+        </section>
+      ))}
     </div>
   );
 }
