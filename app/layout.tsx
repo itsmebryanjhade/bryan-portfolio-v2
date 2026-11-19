@@ -14,10 +14,11 @@ const description = "The portfolio of Bryan Jhade: thoughtful digital design, fr
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Bryan Jhade — Developer", template: "%s — Bryan Jhade" },
+  title: { default: "Bryan Jhade B. Ebuan — Aspiring AI Software Engineer", template: "%s — Bryan Jhade B. Ebuan" },
   description,
-  openGraph: { type: "website", siteName: "Bryan Jhade", title: "Bryan Jhade — Developer", description, images: [{ url: "/profile.png", alt: "Portrait of Bryan Jhade" }] },
-  twitter: { card: "summary", title: "Bryan Jhade — Developer", description, images: ["/profile.png"] },
+  openGraph: { type: "website", siteName: "Bryan Jhade", title: "Bryan Jhade B. Ebuan — Aspiring AI Software Engineer", description },
+  // The share image comes from app/opengraph-image.png and app/twitter-image.png (file conventions).
+  twitter: { card: "summary_large_image", title: "Bryan Jhade B. Ebuan — Aspiring AI Software Engineer", description },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -11,7 +11,7 @@ describe("terminal responses are derived from content", () => {
     const out = neofetch();
     expect(out).toContain(`Role: ${profile.roleLine}`);
     expect(out).toContain("BS IT");
-    expect(out).toContain("election system");
+    expect(out).toContain("AI tools");
     expect(out).toContain(profile.education[0].program);
     expect(out).toContain(profile.availability);
   });

@@ -8,11 +8,13 @@ export type NavItem = {
   soonWhenEmpty?: "gear" | "resources";
 };
 
+/** Home is reached through the name in the sidebar header; listed separately for the palette. */
+export const HOME: NavItem = { href: "/", label: "Home", icon: Home };
+
 export const NAV: { group: "Portfolio" | "Explore"; items: NavItem[] }[] = [
   {
     group: "Portfolio",
     items: [
-      { href: "/", label: "Home", icon: Home },
       { href: "/projects", label: "Projects", icon: Briefcase, count: "projects" },
       { href: "/stack", label: "Stack", icon: Layers },
       { href: "/certifications", label: "Certifications", icon: Award, count: "certifications" },

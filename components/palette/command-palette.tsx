@@ -2,12 +2,20 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
-import { buildItems, type PaletteItem } from "./items";
+import { CornerDownLeft, Search } from "lucide-react";
+import { buildItems, score, type PaletteGroup, type PaletteItem } from "./items";
 import { FOCUSABLE } from "@/lib/focus";
 import { useShortcut } from "./use-shortcut";
 
-const GROUPS: PaletteItem["group"][] = ["Pages", "Projects", "Actions"];
+const GROUPS: PaletteGroup[] = ["Pages", "Projects", "Posts", "Actions"];
+
+function Kbd({ children }: { children: React.ReactNode }) {
+  return (
+    <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded-[5px] border border-border bg-card px-1 font-sans text-[10.5px] text-faint">
+      {children}
+    </kbd>
+  );
+}
 
 export function CommandPalette() {
   const router = useRouter();
@@ -59,9 +67,18 @@ export function CommandPalette() {
 
   const items = useMemo(() => buildItems((href) => router.push(href)), [router]);
   const q = query.trim().toLowerCase();
-  const results = useMemo(() => items.filter((i) => i.label.toLowerCase().includes(q)), [items, q]);
-  // Flat order follows the grouped render order so ArrowDown matches what is on screen.
-  const ordered = useMemo(() => GROUPS.flatMap((g) => results.filter((i) => i.group === g)), [results]);
+  // Best matches first: groups ordered by their best hit, rows by their own score. The flat
+  // order follows the grouped render order so ArrowDown matches what is on screen.
+  const groups = useMemo(() => {
+    const scored = items.map((item) => ({ item, s: score(item, q) })).filter((r) => r.s >= 0);
+    return GROUPS.map((g) => {
+      const rows = scored.filter((r) => r.item.group === g).sort((a, b) => a.s - b.s);
+      return { g, best: rows[0]?.s ?? 9, items: rows.map((r) => r.item) };
+    })
+      .filter((x) => x.items.length)
+      .sort((a, b) => a.best - b.best);
+  }, [items, q]);
+  const ordered = useMemo(() => groups.flatMap((x) => x.items), [groups]);
   const activeIndex = Math.min(active, Math.max(ordered.length - 1, 0));
   const activeItem = ordered[activeIndex];
 
@@ -112,17 +129,21 @@ export function CommandPalette() {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center px-4 pt-[12vh]" onKeyDown={onKeyDown}>
-      <div className="absolute inset-0 bg-bg/70" onClick={close} aria-hidden="true" />
+    <div className="fixed inset-0 z-[60] flex items-start justify-center px-4 pt-[14vh]" onKeyDown={onKeyDown}>
+      <div
+        className="absolute inset-0 bg-bg/60 backdrop-blur-[2px] [animation:page-fade_180ms_ease-out] motion-reduce:[animation:none]"
+        onClick={close}
+        aria-hidden="true"
+      />
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
-        className="relative w-full max-w-lg overflow-hidden rounded-card border border-border bg-panel"
+        className="relative w-full max-w-[560px] overflow-hidden rounded-card border border-border bg-panel shadow-[0_24px_60px_-20px_rgb(0_0_0/0.5)] [animation:palette-in_220ms_cubic-bezier(.22,1,.36,1)] motion-reduce:[animation:none]"
       >
-        <div className="flex items-center gap-2 border-b border-border px-4">
-          <Search size={16} strokeWidth={1.6} aria-hidden="true" className="text-faint" />
+        <div className="flex items-center gap-3 border-b border-border px-4">
+          <Search size={17} strokeWidth={1.6} aria-hidden="true" className="flex-none text-faint" />
           <input
             ref={inputRef}
             role="combobox"
@@ -136,40 +157,70 @@ export function CommandPalette() {
               setQuery(e.target.value);
               setActive(0);
             }}
-            placeholder="Search pages, projects, actions"
+            placeholder="Where to?"
             autoComplete="off"
             spellCheck={false}
-            className="min-h-12 flex-1 bg-transparent text-sm text-fg placeholder:text-faint focus:outline-none"
+            className="h-14 min-w-0 flex-1 bg-transparent text-[15px] text-fg outline-none placeholder:text-faint"
           />
+          <button
+            type="button"
+            onClick={close}
+            className="flex-none rounded-[5px] border border-border bg-card px-1.5 py-0.5 text-[10.5px] text-faint transition-colors duration-150 hover:text-fg"
+          >
+            esc
+          </button>
         </div>
-        <div id="palette-listbox" role="listbox" aria-label="Results" className="max-h-[50vh] overflow-y-auto p-2">
-          {GROUPS.map((g) => {
-            const group = ordered.filter((i) => i.group === g);
-            if (!group.length) return null;
-            return (
-              <div key={g} role="group" aria-label={g}>
-                <p role="presentation" className="px-3 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">{g}</p>
-                {group.map((item) => {
-                  const selected = item === activeItem;
-                  return (
-                    <div
-                      key={item.id}
-                      id={`palette-opt-${item.id}`}
-                      role="option"
-                      aria-selected={selected}
-                      onMouseMove={() => setActive(ordered.indexOf(item))}
-                      onClick={() => choose(item)}
-                      className={`cursor-pointer rounded-nav px-3 py-2 text-sm transition-colors duration-150 ${selected ? "bg-hover text-fg" : "text-muted"}`}
-                    >
-                      {item.label}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+        <div id="palette-listbox" role="listbox" aria-label="Results" className="max-h-[min(420px,52vh)] overflow-y-auto px-2 pb-2">
+          {groups.map(({ g, items: group }) => (
+            <div key={g} role="group" aria-label={g}>
+              <p role="presentation" className="px-3 pb-1.5 pt-3.5 text-xs text-faint">
+                {g}
+              </p>
+              {group.map((item) => {
+                const selected = item === activeItem;
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={item.id}
+                    id={`palette-opt-${item.id}`}
+                    role="option"
+                    aria-selected={selected}
+                    onMouseMove={() => setActive(ordered.indexOf(item))}
+                    onClick={() => choose(item)}
+                    className={`flex cursor-pointer items-center gap-3 rounded-nav px-3 py-2.5 text-sm transition-colors duration-150 ${selected ? "bg-hover text-fg" : "text-muted"}`}
+                  >
+                    <Icon size={16} strokeWidth={1.6} aria-hidden="true" className={`flex-none transition-colors duration-150 ${selected ? "text-fg" : "text-faint"}`} />
+                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    {item.hint && <span className="flex-none text-xs text-faint">{item.hint}</span>}
+                    <CornerDownLeft
+                      size={14}
+                      strokeWidth={1.6}
+                      aria-hidden="true"
+                      className={`flex-none text-faint transition-opacity duration-150 ${selected ? "opacity-100" : "opacity-0"}`}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ))}
         </div>
-        {ordered.length === 0 && <p role="status" className="px-3 py-6 text-center text-sm text-muted">No results</p>}
+        {ordered.length === 0 && (
+          <p role="status" className="px-4 pb-10 pt-8 text-center text-sm text-muted">
+            Nothing for &ldquo;{query.trim()}&rdquo;. Try a page or project name.
+          </p>
+        )}
+        <div aria-hidden="true" className="flex items-center gap-4 border-t border-border px-4 py-2.5 text-[11.5px] text-faint">
+          <span className="flex items-center gap-1.5">
+            <Kbd>↑</Kbd>
+            <Kbd>↓</Kbd>
+            move
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Kbd>↵</Kbd>
+            open
+          </span>
+          <span className="ml-auto">{ordered.length} {ordered.length === 1 ? "result" : "results"}</span>
+        </div>
       </div>
     </div>
   );

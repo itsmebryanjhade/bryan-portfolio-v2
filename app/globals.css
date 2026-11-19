@@ -19,6 +19,8 @@
   --border-hover: #4a4a50;
   --status: #4ade80;
   --glow: rgb(255 255 255 / 0.06);
+  --active: #1e1e22; /* the sidebar's current-page pill: a solid step up from the panel */
+  --grain: 0.55; /* film grain strength on the background canvas (soft-light, so mid-grey is neutral) */
   color-scheme: dark;
 }
 
@@ -34,6 +36,8 @@
   --border-hover: #a1a1aa;
   --status: #15803d;
   --glow: rgb(0 0 0 / 0.04);
+  --active: #e9e9ec;
+  --grain: 0.45;
   color-scheme: light;
 }
 
@@ -62,11 +66,56 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  /* Transparent so the grain layer (body::before, behind everything) sits on the html canvas. */
+  background: transparent;
   color: var(--fg);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  animation: page-fade 200ms ease-out both;
+}
+
+/* No visible scrollbars anywhere; everything still scrolls with wheel, touch and keys. */
+* {
+  scrollbar-width: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * Page entrance, run on every navigation (app/template.tsx re-mounts per route).
+ * Each top-level block of the page "develops" in turn: it rises a little and sharpens from a
+ * soft blur, like a photo coming up in the tray. Stagger is 55ms per block, capped at the 8th.
+ * Fill mode is `backwards` only, so nothing is left transformed afterwards (fixed-position
+ * dialogs inside a page keep working).
+ */
+.page-enter > * > * {
+  animation: develop 620ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.page-enter > * > :nth-child(2) { animation-delay: 55ms; }
+.page-enter > * > :nth-child(3) { animation-delay: 110ms; }
+.page-enter > * > :nth-child(4) { animation-delay: 165ms; }
+.page-enter > * > :nth-child(5) { animation-delay: 220ms; }
+.page-enter > * > :nth-child(6) { animation-delay: 275ms; }
+.page-enter > * > :nth-child(7) { animation-delay: 330ms; }
+.page-enter > * > :nth-child(n + 8) { animation-delay: 385ms; }
+/* Elements that arrive by a shared-element morph skip the entrance, so the two motions don't fight. */
+.page-enter > * > .no-enter { animation: none; }
+
+@keyframes develop {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(6px);
+  }
+}
+/* Phones: the same develop motion without the blur, which is costly for phones to draw. */
+@media (max-width: 639px) {
+  @keyframes develop {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
 }
 
 @keyframes page-fade {
@@ -74,9 +123,105 @@ body {
   to { opacity: 1; }
 }
 
-:focus-visible {
-  outline: 2px solid var(--fg);
-  outline-offset: 2px;
+/* In the base layer so a component's own outline-none (e.g. the palette input) can win. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+  }
+}
+
+/* Shared-element morph between pages (components/ui/morph.tsx): a project thumbnail grows into
+   its screenshot. A light blur mid-flight hides the scaling; reduced motion turns it off. */
+::view-transition-group(.morph) {
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-image-pair(.morph) {
+  animation-name: morph-blur;
+}
+@keyframes morph-blur {
+  40% { filter: blur(3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* The gear keyboard's backlight wave: the band sweeps across in the first 70%, then rests off the
+   right edge before the next pass (components/gear/gear-grid.tsx). */
+@keyframes kb-wave {
+  0% { mask-position: 100% 0; }
+  70%, 100% { mask-position: 0% 0; }
+}
+
+/* Mobile menu sheet (components/shell/mobile-bar.tsx): the sheet drops from under the header,
+   the backdrop fades, and each row develops in a beat after the one above. */
+.sheet-drop { animation: sheet-drop 320ms cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: top; }
+.sheet-fade { animation: page-fade 240ms ease-out both; }
+.sheet-slide { animation: sheet-slide 360ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+/* Closing: a slightly quicker slide back out to the left, with the backdrop fading. */
+.sheet-slide-out { animation: sheet-slide-out 260ms cubic-bezier(0.4, 0, 1, 1) both; }
+.sheet-fade-out { animation: sheet-fade-out 240ms ease-in both; }
+/* Own keyframe names (not "reverse"), so the browser starts them fresh instead of treating the
+   opening animation as already finished. */
+@keyframes sheet-slide-out {
+  to { opacity: 0; transform: translateX(-24px); }
+}
+@keyframes sheet-fade-out {
+  to { opacity: 0; }
+}
+@keyframes sheet-slide {
+  from { opacity: 0; transform: translateX(-24px); }
+}
+.sheet-row { animation: develop 420ms cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+@keyframes sheet-drop {
+  from { opacity: 0; transform: translateY(-10px) scaleY(0.97); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-drop, .sheet-slide, .sheet-slide-out, .sheet-fade, .sheet-fade-out, .sheet-row { animation: none; }
+}
+
+/*
+  Touch screens (no hover). Tailwind only applies hover styles where a real hover exists, so on phones
+  the same effects are driven by other signals:
+  - colour-in: a group in the middle of the screen gets [data-inview] (components/shell/touch-motion.tsx)
+  - tap to play: a gear tile tapped on gets [data-tapped] (components/gear/gear-grid.tsx)
+  - press: tappable cards and tiles dip slightly under the finger.
+*/
+@media (hover: none) {
+  .group[data-inview] .group-hover\:grayscale-0 { --tw-grayscale: grayscale(0%); }
+  .group[data-tapped] .group-hover\:opacity-100 { opacity: 1; }
+  .group[data-tapped] .group-hover\:opacity-70 { opacity: 0.7; }
+  .group[data-tapped] .group-hover\:opacity-0 { opacity: 0; }
+  .group[data-tapped] .kb-layer { animation: kb-wave 2.4s cubic-bezier(0.45, 0, 0.25, 1) infinite; }
+  :is(a, button).group:active,
+  .group:has(> a):active,
+  .press:active { animation: press 160ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+}
+@keyframes press {
+  to { scale: 0.98; }
+}
+
+/* The gear lamp catching: a quick flicker, then it settles on. */
+@keyframes lamp-on {
+  0% { opacity: 0; }
+  7% { opacity: 0.85; }
+  13% { opacity: 0.15; }
+  22% { opacity: 0.95; }
+  30% { opacity: 0.5; }
+  48% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
 }
 
 .skip-link {
@@ -97,24 +242,63 @@ body {
 }
 
 /* Faint radial glow at the top centre of the main column */
+/* A wide, soft pool of light at the top of the page, so the grain catches it like light on film. */
 .glow-top {
-  background-image: radial-gradient(60% 320px at 50% 0, var(--glow), transparent 70%);
+  background-image: radial-gradient(75% 460px at 50% -60px, var(--glow), transparent 78%);
   background-repeat: no-repeat;
 }
+
+/*
+  Black-and-white film grain on the background canvas only: a tiny generated noise tile (no image
+  file, no animation) layered behind all content, so the page reads as a surface rather than flat
+  black while cards, panels and photos stay clean.
+*/
+:root { --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncR type='linear' slope='2.4' intercept='-0.7'/><feFuncG type='linear' slope='2.4' intercept='-0.7'/><feFuncB type='linear' slope='2.4' intercept='-0.7'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--noise);
+  background-size: 220px 220px;
+  mix-blend-mode: soft-light;
+  opacity: var(--grain);
+}
+
+/* The same grain on a panel's own background (the sidebar), under its content: the panel needs to be
+   positioned and its content sits above with .grain-content. Solid things on it, like the active
+   row's pill, cover the grain. */
+.grain-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: var(--noise);
+  background-size: 220px 220px;
+  mix-blend-mode: soft-light;
+  opacity: var(--grain);
+}
+.grain-content { position: relative; z-index: 1; }
 
 .theme-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px; /* matches the sidebar footer icon buttons (h-9) */
+  height: 36px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-nav);
   background: transparent;
   color: var(--muted);
   cursor: pointer;
   transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
 }
+[data-variant="panel"] .theme-toggle { width: 32px; height: 32px; border-radius: 999px; } /* matches the footer icon buttons */
+[data-variant="drawer"] .theme-toggle { width: 44px; height: 44px; border-radius: 999px; } /* touch target in the mobile menu */
+
 .theme-toggle:hover {
   color: var(--fg);
   border-color: var(--border-hover);
