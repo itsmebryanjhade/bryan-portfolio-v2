@@ -21,3 +21,26 @@ export async function fetchContributions(user = "itsmebryanjhade"): Promise<Cont
     return null;
   }
 }
+
+export type Streaks = { current: number; longest: number };
+
+/**
+ * Days in a row with at least one contribution. `current` ends at the last day in the data, or the
+ * day before it (so a streak still counts on a day you haven't pushed yet); `longest` is the best run.
+ */
+export function streaks(days: ContributionDay[]): Streaks {
+  let longest = 0;
+  let run = 0;
+  for (const d of days) {
+    run = d.level > 0 ? run + 1 : 0;
+    longest = Math.max(longest, run);
+  }
+  let end = days.length - 1;
+  if (end >= 0 && days[end].level === 0) end--;
+  let current = 0;
+  while (end >= 0 && days[end].level > 0) {
+    current++;
+    end--;
+  }
+  return { current, longest };
+}

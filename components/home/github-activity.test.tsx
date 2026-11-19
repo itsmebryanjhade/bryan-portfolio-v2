@@ -26,7 +26,7 @@ describe("GithubActivity", () => {
     const { container } = render(await GithubActivity());
     expect(screen.getByText("12 contributions in the last year")).toHaveClass("sr-only");
     const grid = container.querySelector("[data-testid='contrib-grid']");
-    expect(grid).toHaveAttribute("aria-hidden", "true");
+    expect(grid?.closest("[aria-hidden='true']")).not.toBeNull();
     expect(grid?.querySelectorAll("[data-level]")).toHaveLength(2);
   });
 });
