@@ -3,7 +3,6 @@ import type { Certification } from "@/content/types";
 
 function issuerMark(issuer: string): string {
   const first = issuer.split("/")[0].trim();
-  if (/^cs50$/i.test(first)) return "CS50";
   if (/cisco/i.test(first)) return "CI";
   return first.charAt(0).toUpperCase();
 }

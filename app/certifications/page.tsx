@@ -1,55 +1,70 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { CertCard } from "@/components/certs/cert-card";
-import { SectionHeader } from "@/components/ui/section-header";
 import { badges } from "@/content/badges";
 import { certifications } from "@/content/certifications";
+import type { Certification } from "@/content/types";
+import { PAGE_FRAME } from "@/components/ui/page-frame";
+import { BackButton } from "@/components/ui/back-button";
+import { CertGrid } from "@/components/certs/cert-grid";
 
 export const metadata: Metadata = {
   title: "Certifications",
   description: "Certificates and badges earned by Bryan Jhade.",
 };
 
-function BadgeImage({ image }: { image: string }) {
-  return <Image src={image} alt="" width={48} height={48} className="h-12 w-12 shrink-0 object-contain" />;
+const topics: Certification["topic"][] = ["AI", "Computer science", "Game development"];
+const slug = (s: string) => `certs-${s.replace(/\W+/g, "-").toLowerCase()}`;
+const count = (n: number) => String(n).padStart(2, "0");
+
+function GroupHeading({ id, label, n }: { id: string; label: string; n: number }) {
+  return (
+    <div className="mb-4 flex items-baseline justify-between border-b border-border pb-3">
+      <h2 id={id} className="text-xs text-faint">
+        {label}
+      </h2>
+      <span className="font-mono text-[11px] text-faint">{count(n)}</span>
+    </div>
+  );
 }
 
 export default function CertificationsPage() {
   const standalone = badges.filter((b) => !b.certification);
+  const verified = badges.flatMap((b) => (b.certification ? [b.certification] : []));
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
-      <h1 className="sr-only">Certifications</h1>
-      <SectionHeader index="01" title="Certificates" />
-      <ul className="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
-        {certifications.map((c) => {
-          const linked = badges.filter((b) => b.certification === c.slug);
-          return (
-            <li key={c.slug} className="flex flex-col gap-2">
-              <CertCard cert={c} />
-              {linked.map((b) => (
-                <div key={b.name} className="flex items-center gap-3 rounded-card border border-border bg-card px-3 py-2">
-                  <BadgeImage image={b.image} />
-                  <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted">Badge · {b.name}</span>
-                </div>
-              ))}
-            </li>
-          );
-        })}
-      </ul>
-      <div className="mt-12">
-        <SectionHeader index="02" title="Badges" />
-        <ul aria-label="Badges" className="grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+    <div className={PAGE_FRAME}>
+      <BackButton />
+      <h1 className="text-3xl font-medium leading-tight tracking-tight text-fg">
+        Proof of practice
+      </h1>
+      <p className="mt-3 text-sm text-muted">
+        Courses and programs I finished, grouped by topic. Click a certificate to view it.
+      </p>
+
+      {topics.map((topic) => {
+        const items = certifications.filter((c) => c.topic === topic);
+        if (items.length === 0) return null;
+        return (
+          <section key={topic} aria-labelledby={slug(topic)} className="mt-12">
+            <GroupHeading id={slug(topic)} label={topic} n={items.length} />
+            <CertGrid certs={items} verified={verified} />
+          </section>
+        );
+      })}
+
+      <section aria-labelledby="certs-badges" className="mt-12">
+        <GroupHeading id="certs-badges" label="Google AI course badges" n={standalone.length} />
+        <ul aria-label="Badges" className="grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-4">
           {standalone.map((b) => (
-            <li key={b.name} className="flex items-center gap-3 rounded-card border border-border bg-card p-3">
-              <BadgeImage image={b.image} />
-              <div>
-                <div className="text-[14px] leading-snug text-fg">{b.name}</div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-faint">{b.issuer}</div>
-              </div>
+            <li
+              key={b.name}
+              className="group flex flex-col items-center gap-2 rounded-card border border-border bg-card px-3 py-4 text-center transition-colors duration-150 hover:border-border-hover"
+            >
+              <Image src={b.image} alt="" width={44} height={44} unoptimized className="h-11 w-11 object-contain grayscale transition-[filter] duration-500 group-hover:grayscale-0" />
+              <span className="text-[12px] leading-snug text-muted">{b.name}</span>
             </li>
           ))}
         </ul>
-      </div>
+      </section>
     </div>
   );
 }

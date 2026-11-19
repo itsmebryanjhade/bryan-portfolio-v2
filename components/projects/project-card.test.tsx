@@ -8,12 +8,12 @@ afterEach(cleanup);
 const get = (s: string) => getProject(s) as Project;
 
 describe("ProjectCard", () => {
-  it("PondoPath: external link, team tag, no stack chips", () => {
+  it("PondoPath: links to its own page, solo project, no stack chips", () => {
     render(<ProjectCard project={get("pondopath")} />);
     const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "https://pondopath.sanx.dev/");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(screen.getByText("Team project")).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/projects/pondopath");
+    expect(link).not.toHaveAttribute("target");
+    expect(screen.queryByText("Team project")).toBeNull();
     expect(screen.queryByTestId("stack-chips")).toBeNull();
   });
 

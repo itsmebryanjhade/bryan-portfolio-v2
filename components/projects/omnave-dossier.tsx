@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { Part } from "./part";
 
 const screens = [
   {
@@ -36,48 +37,55 @@ const screens = [
   },
 ] as const;
 
-const label = "font-mono text-[11px] uppercase tracking-[0.12em] text-faint";
-
+/**
+ * Omnave's study flow: pick a step on the left, see that screen on a phone standing on the
+ * site's dot-grid stage. Black-and-white at rest, colour on hover, like the other project shots.
+ */
 export function OmnaveDossier() {
   const [selected, setSelected] = useState(0);
   const screen = screens[selected];
 
   return (
-    <section aria-labelledby="omnave-flow-title" className="mt-10 grid gap-8 md:grid-cols-[1fr_auto]">
-      <div>
-        <h2 id="omnave-flow-title" className={label}>
-          Explore the flow <span aria-hidden="true">01—05</span>
-        </h2>
-        <div role="group" aria-label="Explore Omnave screens" className="mt-4 flex flex-col gap-2">
+    <Part id="omnave-flow-title" title="The flow">
+      <div className="grid gap-6 md:grid-cols-[1fr_250px]">
+        <div role="group" aria-label="Explore Omnave screens" className="flex flex-col gap-2">
           {screens.map((item, index) => (
             <button
               type="button"
               key={item.label}
               aria-pressed={selected === index}
               onClick={() => setSelected(index)}
-              className="flex min-h-11 items-center gap-3 rounded-card border border-border bg-card px-4 text-left text-sm text-muted transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg aria-pressed:border-border-hover aria-pressed:bg-hover aria-pressed:text-fg"
+              className="group/step flex min-h-12 items-center gap-3 rounded-card border border-border bg-card px-4 text-left text-sm text-muted transition-colors duration-150 hover:border-border-hover hover:text-fg aria-pressed:border-border-hover aria-pressed:bg-hover aria-pressed:text-fg"
             >
-              <span className="font-mono text-[11px] text-faint">0{index + 1}</span>
+              <span
+                aria-hidden="true"
+                className="h-1.5 w-1.5 flex-none rounded-full bg-border-hover transition-colors duration-150 group-aria-pressed/step:bg-fg"
+              />
               <span>{item.label}</span>
-              <span className="ml-auto" aria-hidden="true">↗</span>
             </button>
           ))}
+          <p className="mt-3 text-sm leading-6 text-muted" aria-live="polite">
+            {screen.caption}
+          </p>
         </div>
-      </div>
 
-      <div className="mx-auto w-full max-w-[272px]">
-        <div className={`mb-2 flex justify-between ${label}`}>
-          <span>Product view / {String(selected + 1).padStart(2, "0")}</span>
-          <span>Omnave / mobile</span>
+        <div className="group relative overflow-hidden rounded-[22px] border border-border bg-card px-6 pt-7">
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(color-mix(in_oklab,var(--color-fg)_20%,transparent)_1px,transparent_1.2px)] bg-[length:12px_12px] [mask-image:linear-gradient(to_bottom,#000,transparent_80%)]"
+          />
+          <div className="relative mx-auto aspect-[9/17] w-full max-w-[200px] overflow-hidden rounded-t-[26px] border-[5px] border-b-0 border-border-hover bg-panel transition-[translate] duration-700 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-1.5 motion-reduce:transition-none">
+            <Image
+              key={screen.image}
+              src={screen.image}
+              alt={screen.alt}
+              fill
+              sizes="200px"
+              className="object-cover object-top grayscale transition-[filter] duration-1000 ease-[cubic-bezier(.22,1,.36,1)] group-hover:grayscale-0 motion-reduce:transition-none"
+            />
+          </div>
         </div>
-        <div className="relative aspect-[9/19] overflow-hidden rounded-card border border-border bg-panel">
-          <Image src={screen.image} alt={screen.alt} fill sizes="272px" className="object-cover object-top" />
-        </div>
-        <p className="mt-3 text-sm leading-6 text-muted" aria-live="polite">
-          <span className={`${label} block`}>0{selected + 1} / {screen.label}</span>
-          {screen.caption}
-        </p>
       </div>
-    </section>
+    </Part>
   );
 }
