@@ -27,11 +27,12 @@ describe("projects", () => {
     expect(getFeaturedProjects().map((p) => p.slug)).toEqual(["omnave", "osc-halalan-2026", "pondopath"]);
   });
   it("only lists stacks that are known", () => {
-    for (const p of getProjects()) if (p.slug !== "omnave") expect(p.stack).toEqual([]);
     expect(getProject("omnave")?.stack).toEqual(["Next.js", "Supabase"]);
+    expect(getProject("pondopath")?.stack).toEqual([]);
+    expect(getProject("osc-halalan-2026")?.stack).toEqual([]);
   });
-  it("has detail pages only for omnave and osc-halalan-2026", () => {
-    expect(getProjects().filter((p) => p.hasDetail).map((p) => p.slug)).toEqual(["omnave", "osc-halalan-2026"]);
+  it("has a detail page for every project", () => {
+    expect(getProjects().filter((p) => p.hasDetail).map((p) => p.slug)).toEqual(["omnave", "osc-halalan-2026", "pondopath", "throwback-ph", "wholeturn", "kisap", "framori"]);
   });
   it("returns undefined for an unknown slug", () => {
     expect(getProject("nope")).toBeUndefined();
@@ -45,28 +46,28 @@ describe("projects", () => {
 
 describe("credentials", () => {
   it("counts certifications plus unmatched badges", () => {
-    expect(getCredentialCount()).toBe(14);
+    expect(getCredentialCount()).toBe(13);
   });
   it("links every badge.certification to a real certification", () => {
     const slugs = certifications.map((c) => c.slug);
     for (const b of badges) if (b.certification) expect(slugs).toContain(b.certification);
   });
-  it("features CS50x, Google AI Professional and Linux Unhatched", () => {
+  it("features Google AI Professional, Prompt Like an Engineer and AI Quality Assurance", () => {
     expect(getFeaturedCertifications().map((c) => c.title)).toEqual([
-      "CS50x: Introduction to Computer Science",
       "Google AI Professional Certificate",
-      "Linux Unhatched",
+      "Prompt Like an Engineer",
+      "AI Quality Assurance & Hallucination Mitigation",
     ]);
   });
 });
 
 describe("derived values", () => {
   it("computes stats", () => {
-    expect(getStats().map((s) => s.value)).toEqual(["7", "14", "2026"]);
+    expect(getStats().map((s) => s.value)).toEqual(["7", "13", "2026"]);
     expect(getStats().map((s) => s.label)).toEqual(["Projects shipped", "Credentials", "Started BSIT"]);
   });
   it("computes nav counts", () => {
-    expect(getNavCounts()).toEqual({ projects: 7, certifications: 14 });
+    expect(getNavCounts()).toEqual({ projects: 7, certifications: 13 });
   });
   it("detects empty lists", () => {
     expect(isEmpty([])).toBe(true);

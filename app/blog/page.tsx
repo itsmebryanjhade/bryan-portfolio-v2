@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { PostGrid } from "@/components/blog/post-grid";
 import { EmptyState } from "@/components/ui/empty-state";
-import { SectionHeader } from "@/components/ui/section-header";
-import { posts } from "@/content/blog";
+import { featuredPostSlug, posts } from "@/content/blog";
+import { PAGE_FRAME } from "@/components/ui/page-frame";
+import { BackButton } from "@/components/ui/back-button";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -10,25 +11,24 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
+  // Featured post first, then the rest in their listed order.
+  // Featured first, then newest first. Dates are "Mon YYYY".
+  const when = (d: string) => Date.parse(`1 ${d}`);
+  const ordered = [...posts].sort(
+    (a, b) => Number(b.slug === featuredPostSlug) - Number(a.slug === featuredPostSlug) || when(b.date) - when(a.date),
+  );
   return (
-    <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
-      <h1 className="sr-only">Blog</h1>
-      <SectionHeader index="01" title="Blog" />
-      {posts.length === 0 ? (
-        <EmptyState title="First posts coming soon" body="Writing on what I build and learn will appear here." />
-      ) : (
-        <ul className="grid list-none gap-3 p-0">
-          {posts.map((p) => (
-            <li key={p.slug}>
-              <Link href={`/blog/${p.slug}`} className="block rounded-card border border-border bg-card p-5 transition-colors duration-150 hover:border-border-hover">
-                <h3 className="text-[15px] font-medium text-fg">{p.title}</h3>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-faint">{p.date}</p>
-                <p className="mt-2 text-[13px] text-muted">{p.summary}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className={PAGE_FRAME}>
+      <BackButton />
+      <h1 className="text-3xl font-medium leading-tight tracking-tight text-fg">Notes from the build</h1>
+      <p className="mt-3 text-sm text-muted">What I learn while building things, the wins and the honest parts.</p>
+      <div className="mt-12">
+        {posts.length === 0 ? (
+          <EmptyState title="First posts coming soon" body="Writing on what I build and learn will appear here." />
+        ) : (
+          <PostGrid posts={ordered} />
+        )}
+      </div>
     </div>
   );
 }

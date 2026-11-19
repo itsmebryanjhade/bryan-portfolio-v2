@@ -17,8 +17,8 @@ describe("sitemap", () => {
   it("includes blog posts from content/blog", () => {
     expect(paths).toContain("/blog/hello-world");
   });
-  it("omits projects without a detail page", () => {
-    expect(paths).not.toContain("/projects/kisap");
+  it("includes every project page", () => {
+    expect(paths).toContain("/projects/kisap");
   });
   it("robots points at the sitemap", () => {
     expect(robots().sitemap).toMatch(/\/sitemap\.xml$/);

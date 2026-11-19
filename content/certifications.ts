@@ -1,17 +1,6 @@
 import type { Certification } from "./types";
 
-export const certifications: Certification[] = [
-  {
-    slug: "cs50x",
-    title: "CS50x: Introduction to Computer Science",
-    issuer: "CS50 / Harvard University",
-    year: "2026",
-    image: "/images/cs50x-certificate.png",
-    imageAlt: "CS50x: Introduction to Computer Science certificate awarded to Bryan Jhade Ebuan",
-    pdf: "/certificates/bryan-ebuan-cs50x.pdf",
-    featured: true,
-    note: "Ten problem sets and a final project",
-  },
+const all: Certification[] = [
   {
     slug: "google-ai-professional",
     title: "Google AI Professional Certificate",
@@ -20,6 +9,7 @@ export const certifications: Certification[] = [
     image: "/images/google-ai-professional-certificate.png",
     imageAlt: "Google AI Professional Certificate awarded to Bryan Jhade Ebuan",
     pdf: "/certificates/bryan-ebuan-google-ai-professional.pdf",
+    topic: "AI",
     featured: true,
     note: "8-course professional certificate",
   },
@@ -31,7 +21,8 @@ export const certifications: Certification[] = [
     image: "/images/prompt-like-an-engineer-certificate.png",
     imageAlt: "Prompt Like an Engineer certificate awarded to Bryan Jhade Ebuan",
     pdf: "/certificates/bryan-ebuan-prompt-like-an-engineer.pdf",
-    featured: false,
+    topic: "AI",
+    featured: true,
     note: "Verified course badge",
   },
   {
@@ -42,7 +33,8 @@ export const certifications: Certification[] = [
     image: "/images/linux-unhatched-certificate.png",
     imageAlt: "Linux Unhatched certificate awarded to Bryan Jhade Ebuan",
     pdf: "/certificates/bryan-ebuan-linux-unhatched.pdf",
-    featured: true,
+    topic: "Computer science",
+    featured: false,
     note: "Verified course badge",
   },
   {
@@ -54,7 +46,8 @@ export const certifications: Certification[] = [
     imageAlt:
       "DICT Region II AI Quality Assurance and Hallucination Mitigation participation certificate awarded to Bryan Jhade Ebuan",
     pdf: "/certificates/bryan-ebuan-dict-ai-quality-assurance.pdf",
-    featured: false,
+    topic: "AI",
+    featured: true,
     note: "4-hour information session. Certificate of participation",
   },
   {
@@ -65,7 +58,11 @@ export const certifications: Certification[] = [
     image: "/images/dict-game-development-certificate.png",
     imageAlt: "DICT game development certificate awarded to Bryan Jhade Ebuan",
     pdf: "/certificates/bryan-ebuan-dict-game-development.pdf",
+    topic: "Game development",
     featured: false,
     note: "Certificate of participation",
   },
 ];
+
+/** Everything the site shows: hidden certificates are left out. */
+export const certifications: Certification[] = all.filter((c) => !c.hidden);
