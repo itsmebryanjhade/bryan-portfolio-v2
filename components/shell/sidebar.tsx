@@ -65,7 +65,7 @@ function NavList({
 }) {
   return (
     <div>
-      <p className="mb-2.5 px-3 text-xs text-faint">{label}</p>
+      <p className="mb-2.5 px-3 text-[12.5px] font-medium text-faint">{label}</p>
       <ul aria-label={label} className="flex flex-col gap-0.5">
           {items.map((item) => {
             const current = isCurrent(pathname, item.href);
@@ -77,25 +77,25 @@ function NavList({
                   href={item.href}
                   data-label={item.label}
                   aria-current={current ? "page" : undefined}
-                  className={`group relative flex ${rowHeight} items-center gap-3 rounded-[10px] border px-3 text-[13.5px] transition-colors duration-200 ${
+                  className={`group relative flex ${rowHeight} items-center gap-3 rounded-[10px] border px-3 text-[15px] font-medium transition-colors duration-200 ${
                     current
                       ? gliding
-                        ? "border-transparent text-fg"
-                        : "border-border bg-[var(--active)] shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_1px_2px_rgb(0_0_0/0.25)] text-fg"
+                        ? "border-transparent font-semibold text-fg"
+                        : "lit-groove font-semibold text-fg"
                       : "border-transparent text-muted hover:bg-hover/40 hover:text-fg"
                   }`}
                 >
                   <Icon
-                    size={15}
-                    strokeWidth={1.6}
+                    size={16}
+                    strokeWidth={1.7}
                     aria-hidden="true"
                     className={`transition-colors duration-200 ${current ? "text-fg" : "text-faint group-hover:text-fg"}`}
                   />
                   <span className="flex-1">{item.label}</span>
                   {end === "soon" ? (
-                    <span className="text-[11px] text-faint">soon</span>
+                    <span className="text-[12px] text-faint">soon</span>
                   ) : end ? (
-                    <span className="font-mono text-[11px] text-faint">{end.count}</span>
+                    <span className="font-mono text-[12px] text-faint">{end.count}</span>
                   ) : null}
                 </Link>
               </li>
@@ -176,7 +176,7 @@ export function Sidebar({
         <button
           type="button"
           onClick={onSearch}
-          className={`group flex ${controlHeight} w-full items-center gap-2.5 rounded-pill border border-border px-3.5 text-[13px] text-faint transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg`}
+          className={`group flex ${controlHeight} w-full items-center gap-2.5 rounded-pill border border-border px-3.5 text-[14px] font-medium text-faint transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg`}
         >
           <Search size={15} strokeWidth={1.6} aria-hidden="true" />
           <span className="flex-1 text-left">Search</span>
@@ -189,7 +189,7 @@ export function Sidebar({
         {pillBox && (
           <span
             aria-hidden="true"
-            className={`pointer-events-none absolute inset-x-0 top-0 rounded-[10px] border border-border bg-[var(--active)] shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_1px_2px_rgb(0_0_0/0.25)] ${
+            className={`lit-groove pointer-events-none absolute inset-x-0 top-0 rounded-[10px] border ${
               pillAnimate ? "transition-[transform,height,opacity] duration-[450ms] ease-[cubic-bezier(.22,1,.36,1)]" : ""
             }`}
             style={{ transform: `translateY(${pillBox.top}px)`, height: pillBox.height, opacity: pillBox.shown ? 1 : 0 }}
@@ -204,8 +204,8 @@ export function Sidebar({
       <div className="-mx-3 -mb-3">
         <div className="flex items-center justify-between gap-3 px-4 pb-4 pt-2">
           <div className="min-w-0">
-            <p className="text-[11px] leading-4 text-faint">Taking on</p>
-            <p className="mt-0.5 flex items-center gap-1.5 text-[13px] font-medium leading-5 text-fg">
+            <p className="text-[12px] leading-4 text-faint">Taking on</p>
+            <p className="mt-0.5 flex items-center gap-1.5 text-[14px] font-semibold leading-5 text-fg">
               <span aria-hidden="true" className="relative flex h-1.5 w-1.5 flex-none">
                 <span className="absolute inset-0 animate-ping rounded-full bg-status opacity-60 motion-reduce:animate-none" />
                 <span className="relative h-1.5 w-1.5 rounded-full bg-status" />
@@ -217,7 +217,7 @@ export function Sidebar({
             type="button"
             onClick={() => setContactOpen(true)}
             aria-label="Email me"
-            className={`group inline-flex ${drawer ? "min-h-11" : "h-8"} flex-none items-center gap-1.5 rounded-full border border-border bg-card px-3 text-[12.5px] font-medium text-fg shadow-[inset_0_1px_0_rgb(255_255_255/0.05)] transition-colors duration-150 hover:border-border-hover hover:bg-hover`}
+            className={`group inline-flex ${drawer ? "min-h-11" : "h-8"} flex-none items-center gap-1.5 rounded-full border border-border bg-card px-3 text-[13.5px] font-semibold text-fg shadow-[inset_0_1px_0_rgb(255_255_255/0.05)] transition-colors duration-150 hover:border-border-hover hover:bg-hover`}
           >
             <Mail size={13} strokeWidth={1.7} aria-hidden="true" className="text-muted transition-[color,translate] duration-200 group-hover:-translate-y-px group-hover:text-fg motion-reduce:transition-none" />
             Say hi
@@ -247,9 +247,25 @@ export function Sidebar({
   );
 }
 
+/**
+ * A giant, faint surname ("Ebuan", the hero's italic word, the one part of the name the sidebar doesn't
+ * show) running up the panel's right edge, cut off by the border and fading out toward the top.
+ * Decoration only: hidden from assistive tech, never selectable or clickable. Needs an isolated,
+ * overflow-hidden panel to sit in.
+ */
+export function SidebarMark() {
+  const surname = profile.name.split(" ").at(-1);
+  return (
+    <span aria-hidden="true" className="sidebar-mark">
+      {surname}
+    </span>
+  );
+}
+
 export function DesktopSidebar() {
   return (
-    <aside className="grain-bg fixed bottom-3.5 left-3.5 top-3.5 z-30 hidden w-[264px] overflow-hidden rounded-[18px] border border-border bg-panel shadow-[0_18px_40px_-20px_rgba(0,0,0,0.8)] lg:block">
+    <aside className="grain-bg fixed bottom-3.5 left-3.5 top-3.5 z-30 hidden w-[264px] overflow-hidden rounded-[18px] edge-lit lg:block">
+      <SidebarMark />
       <Sidebar onSearch={openPalette} />
     </aside>
   );

@@ -19,9 +19,24 @@
   --border-hover: #4a4a50;
   --status: #4ade80;
   --glow: rgb(255 255 255 / 0.06);
-  --active: #1e1e22; /* the sidebar's current-page pill: a solid step up from the panel */
-  --grain: 0.06; /* film grain strength: light specks on dark */
-  --grain-panel: 0.1; /* the sidebar and phone menu: a clear step stronger than the page */
+  --grain: 0.031; /* film grain on the page: a soft texture, light specks on dark */
+  --grain-panel: 0.054; /* the lit panel's own grain, a step stronger so it reads as a material */
+  /* The lit panel (sidebar, phone menu): lifted off the page and lit from the top, like a lamp on a card. */
+  /* The edge-lit slab (sidebar, phone menu): the page's own dark, defined by light catching its rim. */
+  --slab: #0f0f11;
+  --slab-sheen: rgb(255 255 255 / 0.05); /* a faint sheen just inside the top-left edge */
+  --slab-sheen-0: rgb(255 255 255 / 0);
+  --rim-hot: rgb(255 255 255 / 0.34); /* the rim where the light hits: the top-left corner */
+  --rim-mid: rgb(255 255 255 / 0.1);
+  --rim-cool: rgb(255 255 255 / 0.035); /* the far sides, almost dark */
+  --slab-shadow: 0 34px 64px -30px rgb(0 0 0 / 0.95);
+  --panel-hover: #1b1b1f;
+  /* The current page: a lit groove, brightest at its leading edge. */
+  --groove: rgb(255 255 255 / 0.075);
+  --groove-fade: rgb(255 255 255 / 0.015);
+  --groove-rim: rgb(255 255 255 / 0.26);
+  --mark: rgb(255 255 255 / 0.07); /* the panel watermark */
+  --vignette: rgb(0 0 0 / 0.38); /* the page darkens gently toward its edges */
   color-scheme: dark;
 }
 
@@ -37,17 +52,28 @@
   --border-hover: #a1a1aa;
   --status: #15803d;
   --glow: rgb(0 0 0 / 0.04);
-  --active: #e9e9ec;
-  --grain: 0.05; /* dark specks on light */
-  --grain-panel: 0.085;
+  --grain: 0.031; /* dark specks on light */
+  --grain-panel: 0.036;
+  --slab: #fbfbfb;
+  --slab-sheen: rgb(255 255 255 / 0.9);
+  --rim-hot: rgb(0 0 0 / 0.2);
+  --rim-mid: rgb(0 0 0 / 0.08);
+  --rim-cool: rgb(0 0 0 / 0.04);
+  --slab-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.2);
+  --panel-hover: #f0f0f2;
+  --groove: rgb(0 0 0 / 0.055);
+  --groove-fade: rgb(0 0 0 / 0.012);
+  --groove-rim: rgb(0 0 0 / 0.16);
+  --mark: rgb(0 0 0 / 0.05);
+  --vignette: rgb(0 0 0 / 0.035);
   color-scheme: light;
 }
 
 /* Sharp screens (phones, retina laptops) draw each speck at half size, so the same strength reads
    about 40% fainter. A stronger setting there makes the grain look the same as on a standard screen. */
 @media (min-resolution: 2dppx), (-webkit-min-device-pixel-ratio: 2) {
-  :root { --grain: 0.095; --grain-panel: 0.16; }
-  [data-theme="light"] { --grain: 0.08; --grain-panel: 0.135; }
+  :root { --grain: 0.052; --grain-panel: 0.09; }
+  [data-theme="light"] { --grain: 0.05; --grain-panel: 0.058; }
 }
 
 @theme inline {
@@ -322,6 +348,78 @@ body::before {
   opacity: var(--grain-panel);
 }
 .grain-content { position: relative; z-index: 1; }
+
+/* The edge-lit slab (desktop sidebar, phone menu): not a lighter card but a dark slab in the page's own
+   tone, defined by light catching its rim: brightest at the top-left corner, fading around the sides,
+   with a faint sheen just inside that corner and its own grain. The panel's border box carries the rim
+   gradient; its padding box is the slab. */
+.edge-lit {
+  --hover: var(--panel-hover);
+  border: 1px solid transparent;
+  background:
+    /* fades to the sheen's own colour at zero opacity: "transparent" turns grey in WebKit on the light slab */
+    radial-gradient(130% 45% at 0% 0%, var(--slab-sheen), var(--slab-sheen-0) 65%) padding-box,
+    linear-gradient(var(--slab), var(--slab)) padding-box,
+    linear-gradient(155deg, var(--rim-hot), var(--rim-mid) 22%, var(--rim-cool) 55%, var(--rim-cool) 85%, var(--rim-mid)) border-box;
+  box-shadow: var(--slab-shadow);
+}
+
+/* The panel's watermark (SidebarMark): a giant upright "Ebuan" running up the right edge, cut off by the
+   border, strongest near the footer and fading out toward the top. It sits under all content (z -1 inside the isolated panel)
+   but over the slab, so the panel's grain lands on it too. */
+.sidebar-mark {
+  position: absolute;
+  z-index: -1;
+  right: -0.3em;
+  bottom: 7.5rem; /* in the open space between the nav and the footer */
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--font-newsreader), Georgia, serif;
+  /* Upright and semibold, so the cropped letters still read as solid shapes; the italic stays with
+     the header's "Jhade" and the hero's "Ebuan". */
+  font-weight: 600;
+  font-size: 158px;
+  line-height: 0.8;
+  white-space: nowrap;
+  color: var(--mark);
+  /* Vertical writing on the element itself: WebKit sizes a wrapper around vertical text to zero width. */
+  writing-mode: vertical-rl;
+  transform: rotate(180deg); /* reads bottom to top */
+  /* The fade, in the element's own (unrotated) space: its top is the visual bottom, so it stays solid
+     near the footer and fades out toward the top of the panel. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 10%, transparent 88%);
+  mask-image: linear-gradient(to bottom, #000 10%, transparent 88%);
+}
+
+/* The current page in the nav: a lit groove, a soft fill fading to the right with a hairline rim that
+   catches the light at its top-left, echoing the slab it sits in. */
+.lit-groove {
+  /* (needs a positioned element: the rows are `relative`, the gliding pill `absolute`) */
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--groove), var(--groove-fade) 75%);
+}
+.lit-groove::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(120deg, var(--groove-rim), transparent 45%, transparent 80%, var(--groove-fade));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+/* The page recedes: it darkens gently toward the edges, under the grain and all content. */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 55% 35%, transparent 55%, var(--vignette));
+}
 
 .theme-toggle {
   display: inline-flex;

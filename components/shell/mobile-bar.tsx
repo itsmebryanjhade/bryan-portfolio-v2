@@ -9,7 +9,7 @@ import { ContactDialog } from "@/components/contact/contact-dialog";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { ManilaStatus } from "@/components/home/manila-status";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/brand-icons";
-import { explore, isCurrent, openPalette, portfolio, trailing } from "./sidebar";
+import { SidebarMark, explore, isCurrent, openPalette, portfolio, trailing } from "./sidebar";
 import type { NavItem } from "./nav-items";
 import { FOCUSABLE } from "@/lib/focus";
 import { profile } from "@/content/profile";
@@ -35,7 +35,7 @@ function MenuIcon({ open }: { open: boolean }) {
 function SheetGroup({ label, items, pathname, start }: { label: string; items: NavItem[]; pathname: string; start: number }) {
   return (
     <div>
-      <p className="mb-1 px-3 text-xs text-faint">{label}</p>
+      <p className="mb-1 px-3 text-[12.5px] font-medium text-faint">{label}</p>
       <ul aria-label={label} className="m-0 list-none p-0">
         {items.map((item, i) => {
           const current = isCurrent(pathname, item.href);
@@ -46,16 +46,16 @@ function SheetGroup({ label, items, pathname, start }: { label: string; items: N
               <Link
                 href={item.href}
                 aria-current={current ? "page" : undefined}
-                className={`flex min-h-11 items-center gap-3 rounded-[12px] px-3 text-sm transition-colors duration-150 ${
-                  current ? "border border-border bg-[var(--active)] text-fg shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_1px_2px_rgb(0_0_0/0.25)]" : "border border-transparent text-muted active:bg-hover/60"
+                className={`relative flex min-h-11 items-center gap-3 rounded-[12px] px-3 text-[16px] font-medium transition-colors duration-150 ${
+                  current ? "lit-groove border font-semibold text-fg" : "border border-transparent text-muted active:bg-hover/60"
                 }`}
               >
-                <Icon size={16} strokeWidth={1.6} aria-hidden="true" className={current ? "text-fg" : "text-faint"} />
+                <Icon size={17} strokeWidth={1.7} aria-hidden="true" className={current ? "text-fg" : "text-faint"} />
                 <span className="flex-1">{item.label}</span>
                 {end === "soon" ? (
-                  <span className="text-[11px] text-faint">soon</span>
+                  <span className="text-[12px] text-faint">soon</span>
                 ) : end ? (
-                  <span className="text-[11px] tabular-nums text-faint">{end.count}</span>
+                  <span className="text-[12px] tabular-nums text-faint">{end.count}</span>
                 ) : null}
               </Link>
             </li>
@@ -172,8 +172,9 @@ export function MobileBar() {
             role={open ? "dialog" : undefined}
             aria-modal={open ? "true" : undefined}
             aria-label="Site menu"
-            className={`${open ? "sheet-slide" : "sheet-slide-out"} grain-bg absolute bottom-2.5 left-2.5 top-2.5 flex w-[min(300px,calc(100vw-48px))] flex-col gap-5 overflow-y-auto overscroll-contain rounded-[22px] border border-border bg-panel p-2.5 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.6)]`}
+            className={`${open ? "sheet-slide" : "sheet-slide-out"} grain-bg absolute bottom-2.5 left-2.5 top-2.5 flex w-[min(300px,calc(100vw-48px))] flex-col gap-5 overflow-y-auto overscroll-contain rounded-[22px] edge-lit isolate p-2.5`}
           >
+            <SidebarMark />
             <div className="grain-content flex items-center justify-between pl-2">
               {/* First names only, like the sidebar; the full name lives in the hero. */}
               <Link href="/" aria-label={`${profile.name}, home`} className="flex min-h-11 items-center">
@@ -215,8 +216,8 @@ export function MobileBar() {
             <div className="sheet-row grain-content -mx-2.5 -mb-2.5 mt-auto" style={{ animationDelay: "320ms" }}>
               <div className="flex items-center justify-between gap-3 px-4 pb-4 pt-1">
                 <div className="min-w-0">
-                  <p className="text-[11px] leading-4 text-faint">Taking on</p>
-                  <p className="mt-0.5 flex items-center gap-1.5 text-[13px] font-medium leading-5 text-fg">
+                  <p className="text-[12px] leading-4 text-faint">Taking on</p>
+                  <p className="mt-0.5 flex items-center gap-1.5 text-[14px] font-semibold leading-5 text-fg">
                     <span aria-hidden="true" className="h-1.5 w-1.5 flex-none rounded-full bg-status" />
                     New projects
                   </p>
@@ -225,7 +226,7 @@ export function MobileBar() {
                   type="button"
                   onClick={() => setContactOpen(true)}
                   aria-label="Email me"
-                  className="inline-flex min-h-11 flex-none items-center gap-1.5 rounded-full border border-border bg-card px-4 text-[13px] font-medium text-fg shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]"
+                  className="inline-flex min-h-11 flex-none items-center gap-1.5 rounded-full border border-border bg-card px-4 text-[14px] font-semibold text-fg shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]"
                 >
                   <Mail size={14} strokeWidth={1.7} aria-hidden="true" className="text-muted" />
                   Say hi

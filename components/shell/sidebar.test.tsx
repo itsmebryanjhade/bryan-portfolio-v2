@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { Sidebar } from "./sidebar";
+import { Sidebar, SidebarMark } from "./sidebar";
 import { links as linkItems } from "@/content/links";
 
 const pathname = vi.hoisted(() => ({ value: "/" }));
@@ -127,16 +127,26 @@ describe("Sidebar footer", () => {
 });
 
 describe("Row states", () => {
-  it("gives the current row a solid bordered pill and other rows only a hover tint", () => {
+  it("gives the current row a lit groove in semibold and other rows only a hover tint", () => {
     pathname.value = "/stack";
     render(<Sidebar onSearch={() => {}} />);
     const current = screen.getByRole("link", { name: /^Stack/ });
     const other = screen.getByRole("link", { name: /^Projects/ });
-    expect(current.className).toMatch(/border-border/);
-    expect(current.className).toMatch(/bg-\[var\(--active\)\]/);
+    expect(current.className).toMatch(/\blit-groove\b/);
+    expect(current.className).toMatch(/\bfont-semibold\b/);
+    expect(other.className).toMatch(/\bfont-medium\b/);
     expect(other.className).toMatch(/border-transparent/);
     expect(other.className).toMatch(/hover:bg-hover\/40/);
     expect(screen.queryByTestId("nav-highlight")).toBeNull();
+  });
+});
+
+describe("SidebarMark", () => {
+  it("is decoration only: the surname, hidden from assistive tech", () => {
+    const { container } = render(<SidebarMark />);
+    const mark = container.querySelector(".sidebar-mark");
+    expect(mark).toHaveAttribute("aria-hidden", "true");
+    expect(mark?.textContent).toBe("Ebuan");
   });
 });
 
