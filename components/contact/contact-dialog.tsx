@@ -7,7 +7,8 @@ import { profile } from "@/content/profile";
 import { FOCUSABLE } from "@/lib/focus";
 
 const field =
-  "w-full rounded-nav border border-border bg-bg px-3 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-faint hover:border-border-hover focus:border-fg/60";
+  // 16px text on phones: iPhone zooms the page in on any field smaller than that.
+  "w-full rounded-nav border border-border bg-bg px-3 text-base sm:text-sm text-fg outline-none transition-colors duration-150 placeholder:text-faint hover:border-border-hover focus:border-fg/60";
 
 /** Builds the mailto link the form opens: subject names the sender, body carries the message and a reply address. */
 export function buildMailto(to: string, data: { first: string; last: string; email: string; message: string }) {
@@ -21,11 +22,15 @@ export function ContactDialog({ open, onClose }: { open: boolean; onClose: () =>
   const dialogRef = useRef<HTMLFormElement>(null);
   const titleId = useId();
 
-  // Focus the first field on open; give focus back to whatever opened the dialog on close.
+  // On open, focus the first field with a mouse and keyboard; on touch screens focus the dialog itself,
+  // so the on-screen keyboard only comes up when someone taps a field. Focus goes back to whatever
+  // opened the dialog on close.
   useEffect(() => {
     if (!open) return;
     const opener = document.activeElement as HTMLElement | null;
-    dialogRef.current?.querySelector<HTMLElement>("input")?.focus();
+    const touch = window.matchMedia?.("(hover: none)").matches;
+    if (touch) dialogRef.current?.focus({ preventScroll: true });
+    else dialogRef.current?.querySelector<HTMLElement>("input")?.focus();
     return () => {
       if (opener?.isConnected) opener.focus();
     };
@@ -73,8 +78,9 @@ export function ContactDialog({ open, onClose }: { open: boolean; onClose: () =>
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        tabIndex={-1}
         onSubmit={onSubmit}
-        className="relative w-full max-w-md rounded-[18px] border border-border bg-panel p-5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)]"
+        className="sheet-drop relative w-full outline-none max-w-md rounded-[18px] border border-border bg-panel p-5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)]"
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>

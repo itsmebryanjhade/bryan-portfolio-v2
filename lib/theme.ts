@@ -39,4 +39,11 @@ export const themeScript = `try{var t=localStorage.getItem(${JSON.stringify(THEM
  * Inline script: a refresh starts at the top of the page. Browsers (Safari most of all) otherwise put
  * you back where you were; back/forward still restores your place.
  */
-export const reloadTopScript = `try{var n=performance.getEntriesByType("navigation")[0];if(n&&n.type==="reload"){history.scrollRestoration="manual";window.scrollTo(0,0);addEventListener("load",function(){window.scrollTo(0,0);setTimeout(function(){history.scrollRestoration="auto"},0)})}}catch(e){}`;
+/**
+ * Phone-width screens skip page-to-page view transitions (the project thumbnail morph): Safari freezes
+ * the screen while it prepares one, which made back buttons feel stuck. Without the API, React simply
+ * swaps pages and each page plays its normal entrance. Laptops and tablets keep the morph.
+ */
+export const phoneTransitionsScript = `try{if(matchMedia("(max-width: 639px)").matches){delete Document.prototype.startViewTransition}}catch(e){}`;
+
+export const reloadTopScript =`try{var n=performance.getEntriesByType("navigation")[0];if(n&&n.type==="reload"){history.scrollRestoration="manual";window.scrollTo(0,0);addEventListener("load",function(){window.scrollTo(0,0);setTimeout(function(){history.scrollRestoration="auto"},0)})}}catch(e){}`;

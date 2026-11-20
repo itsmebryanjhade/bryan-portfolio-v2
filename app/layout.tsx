@@ -4,7 +4,7 @@ import "./globals.css";
 import { SITE_URL } from "@/lib/site";
 import { Shell } from "@/components/shell/shell";
 import { InlineScript } from "@/components/inline-script";
-import { reloadTopScript, themeScript } from "@/lib/theme";
+import { phoneTransitionsScript, reloadTopScript, themeScript } from "@/lib/theme";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = JetBrains_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -22,5 +22,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  return <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable}`} suppressHydrationWarning><head><InlineScript html={themeScript} /><InlineScript html={reloadTopScript} /></head><body><Shell>{children}</Shell></body></html>;
+  return <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable}`} suppressHydrationWarning><head><InlineScript html={themeScript} /><InlineScript html={reloadTopScript} /><InlineScript html={phoneTransitionsScript} /></head><body><Shell>{children}</Shell></body></html>;
 }

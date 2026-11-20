@@ -120,6 +120,14 @@ body {
   .page-enter > * > :nth-child(7) { animation-delay: 180ms; }
   .page-enter > * > :nth-child(n + 8) { animation-delay: 210ms; }
 }
+/* A tapped link to another page dims the current one at once (components/shell/nav-feedback.tsx), so the
+   tap visibly lands even while a phone is still building the next page. Clearing it is instant: the
+   new page brings its own entrance. */
+html[data-leaving] main {
+  opacity: 0.55;
+  transition: opacity 140ms ease-out;
+}
+
 /* Elements that arrive by a shared-element morph skip the entrance, so the two motions don't fight. */
 .page-enter > * > .no-enter { animation: none; }
 

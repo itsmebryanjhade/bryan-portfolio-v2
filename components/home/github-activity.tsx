@@ -2,8 +2,17 @@ import { fetchContributions } from "@/lib/github";
 
 const GITHUB = "https://github.com/itsmebryanjhade";
 // Level 0 uses the visible `hover` token; levels 1-4 scale `fg` opacity.
-const LEVEL_STYLE = ["bg-hover", "bg-fg/20", "bg-fg/40", "bg-fg/65", "bg-fg/95"];
-const DAY = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+const LEVEL_FILL = ["fill-hover", "fill-fg/20", "fill-fg/40", "fill-fg/65", "fill-fg/95"];
+
+// One day: a 7-unit rounded square, 3 units apart (about the old 3px gap on a laptop-width card).
+const SIZE = 7;
+const GAP = 3;
+const STEP = SIZE + GAP;
+const R = 1.6;
+const SIDE = SIZE - 2 * R;
+function cell(x: number, y: number) {
+  return `M${x + R} ${y}h${SIDE}a${R} ${R} 0 0 1 ${R} ${R}v${SIDE}a${R} ${R} 0 0 1 -${R} ${R}h-${SIDE}a${R} ${R} 0 0 1 -${R} -${R}v-${SIDE}a${R} ${R} 0 0 1 ${R} -${R}z`;
+}
 
 export async function GithubActivity() {
   const data = await fetchContributions();
@@ -19,7 +28,15 @@ export async function GithubActivity() {
   // Rows are weekdays (Sunday first); pad so the first day lands on its weekday row.
   const first = data.days[0] ? new Date(`${data.days[0].date}T00:00:00Z`).getUTCDay() : 0;
   const weeks = Math.ceil((first + data.days.length) / 7);
-  const cols = { gridTemplateColumns: `repeat(${weeks}, minmax(0, 1fr))` };
+  // The year is drawn as one SVG with a single shape per level (each day a small rounded square in it),
+  // not 365 boxes: far less for a phone to build and lay out when the home page opens.
+  const shapes: string[] = ["", "", "", "", ""];
+  data.days.forEach((d, i) => {
+    const slot = first + i;
+    shapes[d.level] += cell(Math.floor(slot / 7) * STEP, (slot % 7) * STEP);
+  });
+  const width = weeks * STEP - GAP;
+  const height = 7 * STEP - GAP;
 
   const total = `${data.total.toLocaleString("en-US")} ${data.total === 1 ? "contribution" : "contributions"} in the last year`;
 
@@ -28,19 +45,11 @@ export async function GithubActivity() {
         <p className="sr-only">{total}</p>
 
         <div aria-hidden="true">
-          <div data-testid="contrib-grid" className="grid grid-flow-col grid-rows-7 gap-[3px]" style={cols}>
-            {Array.from({ length: first }, (_, i) => (
-              <span key={`pad-${i}`} className="aspect-square" />
-            ))}
-            {data.days.map((d) => (
-              <span
-                key={d.date}
-                data-level={d.level}
-                title={DAY.format(new Date(`${d.date}T00:00:00Z`))}
-                className={`aspect-square rounded-[2px] ${LEVEL_STYLE[d.level]}`}
-              />
-            ))}
-          </div>
+          <svg data-testid="contrib-grid" viewBox={`0 0 ${width} ${height}`} className="block h-auto w-full">
+            {shapes.map((d, level) =>
+              d ? <path key={level} data-level={level} d={d} className={LEVEL_FILL[level]} /> : null,
+            )}
+          </svg>
       </div>
     </div>
   );

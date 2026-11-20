@@ -201,6 +201,42 @@ function deckPose(offset: number) {
   };
 }
 
+/** Before the deal: every card gathered behind the front one, a touch smaller and lower. */
+const STACKED_DECK = "translate(-50%, calc(-50% + 18px)) rotate(0deg) scale(0.92)";
+const STACKED_FAN = "translateX(-50%) translateY(26px) rotate(0deg) scale(0.9)";
+
+/**
+ * The deal: the first time the deck scrolls into view, the cards start gathered in one stack and
+ * spread out to their places, one after another. "static" = no deal (server HTML, already on screen
+ * at load, reduced motion); "stacked" = waiting off screen; "dealing" = spreading out; "dealt" = done.
+ */
+function useDeal(ref: React.RefObject<HTMLElement | null>, reduce: boolean) {
+  const [phase, setPhase] = useState<"static" | "stacked" | "dealing" | "dealt">("static");
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduce || typeof IntersectionObserver === "undefined") return;
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.85) return; // already in view: leave it be
+    let done = 0;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        setPhase("dealing");
+        done = window.setTimeout(() => setPhase("dealt"), 1400);
+      },
+      { rootMargin: "0px 0px -22% 0px" },
+    );
+    io.observe(el);
+    const id = requestAnimationFrame(() => setPhase((p) => (p === "static" ? "stacked" : p)));
+    return () => {
+      cancelAnimationFrame(id);
+      clearTimeout(done);
+      io.disconnect();
+    };
+  }, [ref, reduce]);
+  return phase;
+}
+
 /** Pose in the hand by offset from the top card: -1 tucked left, 1 tucked right. */
 function fanPose(offset: number, lean: boolean) {
   if (offset === 0) return { transform: "translateX(-50%) translateY(0) rotate(0deg) scale(1)", zIndex: 30, filter: "none" };
@@ -232,12 +268,14 @@ export function AppShelf({ items }: { items: ShelfItem[] }) {
   const reduce = usePrefersReducedMotion();
   const n = items.length;
   const { ref: frameRef, scale } = useFitScale(STAGE_W);
+  const deal = useDeal(frameRef, reduce);
 
   useEffect(() => {
-    if (paused || reduce) return;
+    // The hand starts cycling once it has been dealt (or straight away when there is no deal).
+    if (paused || reduce || deal === "stacked" || deal === "dealing") return;
     const id = setInterval(() => setTop((t) => (t + 1) % n), 5500);
     return () => clearInterval(id);
-  }, [paused, reduce, n]);
+  }, [paused, reduce, n, deal]);
 
   return (
     <div
@@ -285,6 +323,9 @@ export function AppShelf({ items }: { items: ShelfItem[] }) {
           const isTop = offset === 0;
           const fan = fanPose(offset, lean === i);
           const deck = deckPose(offset);
+          const stacked = deal === "stacked";
+          // While dealing, the cards leave the stack one after another: the front card first.
+          const delay = deal === "dealing" ? Math.abs(offset) * 110 : 0;
           return (
             <article
               key={item.project.slug}
@@ -293,21 +334,22 @@ export function AppShelf({ items }: { items: ShelfItem[] }) {
               onMouseLeave={() => setLean((v) => (v === i ? null : v))}
               style={
                 {
-                  "--pose-deck": deck.transform,
-                  "--pose-fan": fan.transform,
+                  "--pose-deck": stacked ? STACKED_DECK : deck.transform,
+                  "--pose-fan": stacked ? STACKED_FAN : fan.transform,
                   "--shade-deck": deck.filter,
                   "--shade-fan": fan.filter,
                   zIndex: fan.zIndex,
-                  transition: `transform 800ms ${EASE}, filter 800ms ${EASE}`,
+                  transition: stacked ? "none" : `transform 800ms ${EASE} ${delay}ms, filter 800ms ${EASE} ${delay}ms`,
                 } as React.CSSProperties
               }
               className="absolute left-1/2 top-1/2 h-[300px] w-[94%] origin-center [filter:var(--shade-deck)] [transform:var(--pose-deck)] motion-reduce:!transition-none sm:top-4 sm:h-[250px] sm:w-[420px] sm:origin-bottom sm:[filter:var(--shade-fan)] sm:[transform:var(--pose-fan)]"
             >
-              {/* soft colour glow behind the card */}
+              {/* Soft colour glow behind the card. Laptops blur it; phones fade its edges with a mask
+                  instead, which looks the same but costs a phone almost nothing to draw. */}
               <span
                 aria-hidden="true"
                 style={{ background: item.gradient }}
-                className={`pointer-events-none absolute -inset-6 -z-10 rounded-full blur-3xl transition-opacity duration-700 ${isTop ? "opacity-25" : "opacity-40"}`}
+                className={`pointer-events-none absolute -inset-6 -z-10 rounded-full [mask-image:radial-gradient(closest-side,#000_35%,transparent)] transition-opacity duration-700 sm:[mask-image:none] sm:blur-3xl ${isTop ? "opacity-25" : "opacity-40"}`}
               />
               <ShelfCard item={item} front={isTop} banner />
               {!isTop && (
