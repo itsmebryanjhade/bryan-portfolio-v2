@@ -1,8 +1,8 @@
 {
   "app/layout.tsx": {
-    "mtime": 1795157460.597952,
-    "seen": 1795159948.9874413,
-    "ast_hash": "c16d9bee99d47f043633673a7946a49b",
+    "mtime": 1795163444.5628934,
+    "seen": 1795163592.7061634,
+    "ast_hash": "c78e564e4219c068ca6bbd93adcca546",
     "semantic_hash": ""
   },
   "app/page.tsx": {
@@ -90,9 +90,9 @@
     "semantic_hash": ""
   },
   "lib/theme.ts": {
-    "mtime": 1795157460.595962,
-    "seen": 1795159948.9880085,
-    "ast_hash": "8cd02807b961dd9c474002c141c385df",
+    "mtime": 1795163429.4582152,
+    "seen": 1795163592.7064133,
+    "ast_hash": "d6e6d295d2fcea82cc7c51db7a189b4e",
     "semantic_hash": ""
   },
   "content/badges.ts": {
@@ -168,8 +168,8 @@
     "semantic_hash": ""
   },
   "components/shell/mobile-bar.tsx": {
-    "mtime": 1795157581.307911,
-    "seen": 1795159948.9877682,
+    "mtime": 1795161817.6251402,
+    "seen": 1795163355.2467291,
     "ast_hash": "cf6ed547be0208ff80167a92003569d2",
     "semantic_hash": ""
   },
@@ -180,9 +180,9 @@
     "semantic_hash": ""
   },
   "components/shell/shell.tsx": {
-    "mtime": 1795102328.6712458,
-    "seen": 1795155919.8182745,
-    "ast_hash": "dbc27e4cefa573c476b38b987fd7f8ac",
+    "mtime": 1795163084.2627425,
+    "seen": 1795163355.2467456,
+    "ast_hash": "d80ff3367d8b9f1625625b427f874772",
     "semantic_hash": ""
   },
   "components/shell/sidebar.test.tsx": {
@@ -300,15 +300,15 @@
     "semantic_hash": ""
   },
   "components/home/github-activity.test.tsx": {
-    "mtime": 1795102328.6133354,
-    "seen": 1795155919.8182287,
-    "ast_hash": "ee5419d9c2bb394f06f2d8053865e552",
+    "mtime": 1795163109.817388,
+    "seen": 1795163355.2466285,
+    "ast_hash": "084e893a4d3691b138b02a0a5ebedfea",
     "semantic_hash": ""
   },
   "components/home/github-activity.tsx": {
-    "mtime": 1795102328.6153417,
-    "seen": 1795155919.8182306,
-    "ast_hash": "bcf462cb7de1bccc699d44fe85443b47",
+    "mtime": 1795163137.8842416,
+    "seen": 1795163355.246632,
+    "ast_hash": "fc4e9ea465e5f301742fe8e617f815a7",
     "semantic_hash": ""
   },
   "lib/github.test.ts": {
@@ -534,9 +534,9 @@
     "semantic_hash": ""
   },
   "components/contact/contact-dialog.tsx": {
-    "mtime": 1795102328.589639,
-    "seen": 1795155919.818202,
-    "ast_hash": "6125fc1d0a4610312bb569e91807c421",
+    "mtime": 1795163026.8937619,
+    "seen": 1795163355.2465723,
+    "ast_hash": "28c5ddbf39288e05e3215df6a292836a",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-11-18-sidebar-quiet-panel.md": {
@@ -636,9 +636,9 @@
     "semantic_hash": ""
   },
   "components/home/app-shelf.tsx": {
-    "mtime": 1795157486.4537284,
-    "seen": 1795159948.98762,
-    "ast_hash": "0dc81ea81a12a799b50325ed3fe82f83",
+    "mtime": 1795163054.3642037,
+    "seen": 1795163355.246611,
+    "ast_hash": "c3cc9d9310aba52ce99911575bfca70c",
     "semantic_hash": ""
   },
   "content/blog/i-started-with-a-chat-window.mdx": {
@@ -876,9 +876,21 @@
     "semantic_hash": ""
   },
   "components/shell/touch-motion.tsx": {
-    "mtime": 1795159590.9800239,
-    "seen": 1795159948.9877937,
+    "mtime": 1795161817.6251402,
+    "seen": 1795163355.2467573,
     "ast_hash": "7d74ce8f82b089060649fe238381bd04",
+    "semantic_hash": ""
+  },
+  "components/shell/nav-feedback.test.tsx": {
+    "mtime": 1795163177.0184615,
+    "seen": 1795163355.246734,
+    "ast_hash": "7f5af617af286ab4548ef14a6cf623d4",
+    "semantic_hash": ""
+  },
+  "components/shell/nav-feedback.tsx": {
+    "mtime": 1795163083.4057522,
+    "seen": 1795163355.2467377,
+    "ast_hash": "be22bd5e34957ba1790495001d074947",
     "semantic_hash": ""
   }
 }
