@@ -21,6 +21,7 @@
   --glow: rgb(255 255 255 / 0.06);
   --active: #1e1e22; /* the sidebar's current-page pill: a solid step up from the panel */
   --grain: 0.06; /* film grain strength: light specks on dark */
+  --grain-panel: 0.1; /* the sidebar and phone menu: a clear step stronger than the page */
   color-scheme: dark;
 }
 
@@ -38,14 +39,15 @@
   --glow: rgb(0 0 0 / 0.04);
   --active: #e9e9ec;
   --grain: 0.05; /* dark specks on light */
+  --grain-panel: 0.085;
   color-scheme: light;
 }
 
 /* Sharp screens (phones, retina laptops) draw each speck at half size, so the same strength reads
    about 40% fainter. A stronger setting there makes the grain look the same as on a standard screen. */
 @media (min-resolution: 2dppx), (-webkit-min-device-pixel-ratio: 2) {
-  :root { --grain: 0.095; }
-  [data-theme="light"] { --grain: 0.08; }
+  :root { --grain: 0.095; --grain-panel: 0.16; }
+  [data-theme="light"] { --grain: 0.08; --grain-panel: 0.135; }
 }
 
 @theme inline {
@@ -226,7 +228,7 @@ html[data-leaving] main {
   the same effects are driven by other signals:
   - colour-in: a group in the middle of the screen gets [data-inview] (components/shell/touch-motion.tsx)
   - tap to play: a gear tile tapped on gets [data-tapped] (components/gear/gear-grid.tsx)
-  - press: tappable cards and tiles dip slightly under the finger.
+  - press: gear tiles dip slightly under the finger (links don't: see below).
 */
 @media (hover: none) {
   .group[data-inview] .group-hover\:grayscale-0 { --tw-grayscale: grayscale(0%); }
@@ -234,8 +236,9 @@ html[data-leaving] main {
   .group[data-tapped] .group-hover\:opacity-70 { opacity: 0.7; }
   .group[data-tapped] .group-hover\:opacity-0 { opacity: 0; }
   .group[data-tapped] .kb-layer { animation: kb-wave 2.4s cubic-bezier(0.45, 0, 0.25, 1) infinite; }
-  :is(a, button).group:active,
-  .group:has(> a):active,
+  /* Only on tiles that play something in place (the gear tiles). Never on links: on iPhone Safari an
+     animation starting under the finger makes it drop the tap, so links needed two or three taps.
+     A tapped link answers by dimming the page instead (nav-feedback.tsx). */
   .press:active { animation: press 160ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 }
 @keyframes press {
@@ -316,7 +319,7 @@ body::before {
   pointer-events: none;
   background-image: var(--noise);
   background-size: 220px 220px;
-  opacity: var(--grain);
+  opacity: var(--grain-panel);
 }
 .grain-content { position: relative; z-index: 1; }
 

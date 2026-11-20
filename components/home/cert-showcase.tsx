@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useEntrance } from "./use-entrance";
 import type { Certification } from "@/content/types";
 
 /**
@@ -11,16 +12,26 @@ import type { Certification } from "@/content/types";
  */
 export function CertShowcase({ certs, more }: { certs: Certification[]; more: number }) {
   const [active, setActive] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  // Entrance: the print starts a little lower and more tilted (already so in the first paint) and
+  // settles onto the page; when it was below the fold, the rows then follow one after another.
+  const phase = useEntrance(ref, { delay: 220, settle: 1400 });
+  const settling = phase === "pending" || phase === "armed";
 
   return (
-    <div className="grid items-center gap-8 sm:grid-cols-[300px_1fr] sm:gap-10">
+    <div ref={ref} className="grid items-center gap-8 sm:grid-cols-[300px_1fr] sm:gap-10">
       {/* the print */}
       <div className="relative mx-auto w-full max-w-[340px] sm:mx-0">
-        <div className="relative aspect-[1.414/1] -rotate-3 rounded-[10px] bg-white p-1.5 shadow-[0_24px_50px_-22px_rgba(0,0,0,0.9)] ring-1 ring-black/5 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] hover:rotate-0 motion-reduce:transition-none">
+        <div
+          className={`relative aspect-[1.414/1] rounded-[10px] bg-white p-1.5 shadow-[0_24px_50px_-22px_rgba(0,0,0,0.9)] ring-1 ring-black/5 ease-[cubic-bezier(.22,1,.36,1)] hover:rotate-0 motion-reduce:transition-none ${
+            settling ? "translate-y-5 rotate-[-9deg] scale-[0.94] duration-0" : `-rotate-3 ${phase === "go" ? "duration-1000" : "duration-500"}`
+          } transition-transform`}
+        >
           <div className="relative h-full w-full overflow-hidden rounded-[4px]">
             {certs.map((c, i) => (
               <Image
                 key={c.slug}
+                loading="eager"
                 src={c.image}
                 alt={i === active ? c.imageAlt : ""}
                 aria-hidden={i !== active}
@@ -47,7 +58,11 @@ export function CertShowcase({ certs, more }: { certs: Certification[]; more: nu
                 aria-current={on ? "true" : undefined}
                 onMouseEnter={() => setActive(i)}
                 onFocus={() => setActive(i)}
-                className="flex cursor-default items-baseline gap-4 border-t border-border py-3.5 outline-none focus-visible:bg-hover/50"
+                // Rows only hide while the section waits below the fold ("armed"), never in the server HTML.
+                style={phase === "go" ? { transitionDelay: `${180 + i * 80}ms` } : undefined}
+                className={`flex cursor-default items-baseline gap-4 border-t border-border py-3.5 outline-none transition-[opacity,translate] ease-[cubic-bezier(.22,1,.36,1)] focus-visible:bg-hover/50 motion-reduce:transition-none ${
+                  phase === "armed" ? "translate-y-2 opacity-0 duration-0" : "duration-700"
+                }`}
               >
                 <span className="min-w-0 flex-1 leading-snug">
                   <span className={`text-[15px] transition-colors duration-200 ${on ? "text-fg" : "text-muted"}`}>{c.title}</span>

@@ -37,6 +37,7 @@ export function CertGrid({ certs, verified = [] }: { certs: Certification[]; ver
               <span className="relative block aspect-[1.414/1] overflow-hidden rounded-card border border-border bg-white p-1 transition-[transform,translate,scale,rotate,border-color] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-1 group-hover:border-border-hover motion-reduce:transition-none">
                 <span className="relative block h-full w-full">
                   <Image
+                    loading="eager"
                     src={c.image}
                     alt={c.imageAlt}
                     fill

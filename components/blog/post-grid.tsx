@@ -15,6 +15,7 @@ export function PostGrid({ posts }: { posts: Post[] }) {
           <Link href={`/blog/${p.slug}`} className="group block">
             <span className="relative block aspect-[16/10] overflow-hidden rounded-card border border-border bg-panel transition-colors duration-200 group-hover:border-border-hover">
               <Image
+                loading="eager"
                 src={p.image}
                 alt={p.imageAlt}
                 fill

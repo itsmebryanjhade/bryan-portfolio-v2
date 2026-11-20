@@ -17,6 +17,7 @@ export function CertCard({ cert }: { cert: Certification }) {
     >
       <div className="relative aspect-[16/10] overflow-hidden border-b border-border bg-panel">
         <Image
+          loading="eager"
           src={cert.image}
           alt={cert.imageAlt}
           fill

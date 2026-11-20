@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEntrance, usePrefersReducedMotion } from "./use-entrance";
 import { FileText, Globe } from "lucide-react";
 import { HalalanLogo } from "@/components/ui/brand-icons";
 import type { Project } from "@/content/types";
@@ -24,7 +25,7 @@ function Logo({ logo, className }: { logo: string; className: string }) {
   if (logo === "halalan") return <HalalanLogo className={className} />;
   return (
     <span className={`relative block ${className}`}>
-      <Image src={logo} alt="" fill sizes="96px" unoptimized className="object-contain" />
+      <Image src={logo} alt="" fill sizes="96px" unoptimized loading="eager" className="object-contain" />
     </span>
   );
 }
@@ -169,20 +170,6 @@ function useFitScale(base: number) {
   return { ref, scale };
 }
 
-const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";
-/** Live "reduce motion" preference; false on the server and where matchMedia is missing. */
-function usePrefersReducedMotion() {
-  return useSyncExternalStore(
-    (cb) => {
-      if (typeof window.matchMedia !== "function") return () => {};
-      const mq = window.matchMedia(REDUCE_QUERY);
-      mq.addEventListener("change", cb);
-      return () => mq.removeEventListener("change", cb);
-    },
-    () => typeof window.matchMedia === "function" && window.matchMedia(REDUCE_QUERY).matches,
-    () => false,
-  );
-}
 
 
 /**
@@ -204,38 +191,6 @@ function deckPose(offset: number) {
 /** Before the deal: every card gathered behind the front one, a touch smaller and lower. */
 const STACKED_DECK = "translate(-50%, calc(-50% + 18px)) rotate(0deg) scale(0.92)";
 const STACKED_FAN = "translateX(-50%) translateY(26px) rotate(0deg) scale(0.9)";
-
-/**
- * The deal: the first time the deck scrolls into view, the cards start gathered in one stack and
- * spread out to their places, one after another. "static" = no deal (server HTML, already on screen
- * at load, reduced motion); "stacked" = waiting off screen; "dealing" = spreading out; "dealt" = done.
- */
-function useDeal(ref: React.RefObject<HTMLElement | null>, reduce: boolean) {
-  const [phase, setPhase] = useState<"static" | "stacked" | "dealing" | "dealt">("static");
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || reduce || typeof IntersectionObserver === "undefined") return;
-    if (el.getBoundingClientRect().top < window.innerHeight * 0.85) return; // already in view: leave it be
-    let done = 0;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((e) => e.isIntersecting)) return;
-        io.disconnect();
-        setPhase("dealing");
-        done = window.setTimeout(() => setPhase("dealt"), 1400);
-      },
-      { rootMargin: "0px 0px -22% 0px" },
-    );
-    io.observe(el);
-    const id = requestAnimationFrame(() => setPhase((p) => (p === "static" ? "stacked" : p)));
-    return () => {
-      cancelAnimationFrame(id);
-      clearTimeout(done);
-      io.disconnect();
-    };
-  }, [ref, reduce]);
-  return phase;
-}
 
 /** Pose in the hand by offset from the top card: -1 tucked left, 1 tucked right. */
 function fanPose(offset: number, lean: boolean) {
@@ -268,11 +223,13 @@ export function AppShelf({ items }: { items: ShelfItem[] }) {
   const reduce = usePrefersReducedMotion();
   const n = items.length;
   const { ref: frameRef, scale } = useFitScale(STAGE_W);
-  const deal = useDeal(frameRef, reduce);
+  // The deal: the cards start gathered in one stack (already so in the first paint) and spread out to
+  // their places one after another when the deck comes into view.
+  const deal = useEntrance(frameRef, { delay: 260, settle: 1500 });
 
   useEffect(() => {
-    // The hand starts cycling once it has been dealt (or straight away when there is no deal).
-    if (paused || reduce || deal === "stacked" || deal === "dealing") return;
+    // The hand starts cycling once it has been dealt.
+    if (paused || reduce || deal !== "done") return;
     const id = setInterval(() => setTop((t) => (t + 1) % n), 5500);
     return () => clearInterval(id);
   }, [paused, reduce, n, deal]);
@@ -323,9 +280,12 @@ export function AppShelf({ items }: { items: ShelfItem[] }) {
           const isTop = offset === 0;
           const fan = fanPose(offset, lean === i);
           const deck = deckPose(offset);
-          const stacked = deal === "stacked";
-          // While dealing, the cards leave the stack one after another: the front card first.
-          const delay = deal === "dealing" ? Math.abs(offset) * 110 : 0;
+          const stacked = deal === "pending" || deal === "armed";
+          // While dealing, the cards leave the stack one after another (the front card first), a little
+          // slower and softer than the everyday cycling.
+          const dealing = deal === "go";
+          const delay = dealing ? Math.abs(offset) * 130 : 0;
+          const dur = dealing ? 1000 : 800;
           return (
             <article
               key={item.project.slug}
@@ -339,7 +299,7 @@ export function AppShelf({ items }: { items: ShelfItem[] }) {
                   "--shade-deck": deck.filter,
                   "--shade-fan": fan.filter,
                   zIndex: fan.zIndex,
-                  transition: stacked ? "none" : `transform 800ms ${EASE} ${delay}ms, filter 800ms ${EASE} ${delay}ms`,
+                  transition: stacked ? "none" : `transform ${dur}ms ${EASE} ${delay}ms, filter ${dur}ms ${EASE} ${delay}ms`,
                 } as React.CSSProperties
               }
               className="absolute left-1/2 top-1/2 h-[300px] w-[94%] origin-center [filter:var(--shade-deck)] [transform:var(--pose-deck)] motion-reduce:!transition-none sm:top-4 sm:h-[250px] sm:w-[420px] sm:origin-bottom sm:[filter:var(--shade-fan)] sm:[transform:var(--pose-fan)]"

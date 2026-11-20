@@ -38,6 +38,7 @@ export function NowStrip() {
           alt=""
           width={22}
           height={22}
+          loading="eager"
           className="h-[22px] w-[22px]"
         />
       ),

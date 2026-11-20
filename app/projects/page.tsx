@@ -54,7 +54,7 @@ function ProjectRow({ project }: { project: Project }) {
       >
         <Morph name={`project-${project.slug}`}>
           <span className="relative h-11 w-16 flex-none overflow-hidden rounded-nav border border-border bg-panel">
-            <Image src={project.image} alt={project.imageAlt} fill sizes="64px" className="object-cover object-top" />
+            <Image loading="eager" src={project.image} alt={project.imageAlt} fill sizes="64px" className="object-cover object-top" />
           </span>
         </Morph>
         <span className="min-w-0 flex-1">

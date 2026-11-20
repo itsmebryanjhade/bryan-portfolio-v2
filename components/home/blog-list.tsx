@@ -18,6 +18,7 @@ export function BlogList({ posts }: { posts: Post[] }) {
       >
         <span className="relative block aspect-[16/10] overflow-hidden rounded-[8px] bg-panel">
           <Image
+            loading="eager"
             src={lead.image}
             alt={lead.imageAlt}
             fill

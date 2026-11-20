@@ -12,6 +12,7 @@ export function ProjectCard({ project }: { project: Project }) {
     <>
       <div className="relative aspect-[16/10] overflow-hidden border-b border-border bg-panel">
         <Image
+          loading="eager"
           src={project.image}
           alt={project.imageAlt}
           fill
