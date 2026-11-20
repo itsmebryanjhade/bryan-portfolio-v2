@@ -20,7 +20,7 @@
   --status: #4ade80;
   --glow: rgb(255 255 255 / 0.06);
   --active: #1e1e22; /* the sidebar's current-page pill: a solid step up from the panel */
-  --grain: 0.55; /* film grain strength on the background canvas (soft-light, so mid-grey is neutral) */
+  --grain: 0.06; /* film grain strength: light specks on dark */
   color-scheme: dark;
 }
 
@@ -37,8 +37,15 @@
   --status: #15803d;
   --glow: rgb(0 0 0 / 0.04);
   --active: #e9e9ec;
-  --grain: 0.45;
+  --grain: 0.05; /* dark specks on light */
   color-scheme: light;
+}
+
+/* Sharp screens (phones, retina laptops) draw each speck at half size, so the same strength reads
+   about 40% fainter. A stronger setting there makes the grain look the same as on a standard screen. */
+@media (min-resolution: 2dppx), (-webkit-min-device-pixel-ratio: 2) {
+  :root { --grain: 0.095; }
+  [data-theme="light"] { --grain: 0.08; }
 }
 
 @theme inline {
@@ -63,6 +70,9 @@
 html {
   background: var(--bg);
 }
+
+/* Taps act immediately: no waiting to see whether a tap is the start of a double-tap zoom. */
+a, button, [role="button"], label, summary { touch-action: manipulation; }
 
 body {
   margin: 0;
@@ -98,6 +108,18 @@ body {
 .page-enter > * > :nth-child(6) { animation-delay: 275ms; }
 .page-enter > * > :nth-child(7) { animation-delay: 330ms; }
 .page-enter > * > :nth-child(n + 8) { animation-delay: 385ms; }
+/* Phones: a quicker entrance with a tighter stagger, so a tapped page shows up right away instead of
+   building up over a second. Same motion, less waiting. */
+@media (max-width: 639px) {
+  .page-enter > * > * { animation-duration: 420ms; }
+  .page-enter > * > :nth-child(2) { animation-delay: 30ms; }
+  .page-enter > * > :nth-child(3) { animation-delay: 60ms; }
+  .page-enter > * > :nth-child(4) { animation-delay: 90ms; }
+  .page-enter > * > :nth-child(5) { animation-delay: 120ms; }
+  .page-enter > * > :nth-child(6) { animation-delay: 150ms; }
+  .page-enter > * > :nth-child(7) { animation-delay: 180ms; }
+  .page-enter > * > :nth-child(n + 8) { animation-delay: 210ms; }
+}
 /* Elements that arrive by a shared-element morph skip the entrance, so the two motions don't fight. */
 .page-enter > * > .no-enter { animation: none; }
 
@@ -133,6 +155,12 @@ body {
 
 /* Shared-element morph between pages (components/ui/morph.tsx): a project thumbnail grows into
    its screenshot. A light blur mid-flight hides the scaling; reduced motion turns it off. */
+/* Only the named morphs animate during a navigation. The browser's default whole-page cross-fade is
+   switched off: it held the old page on screen longer and made every tap feel slower. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
 ::view-transition-group(.morph) {
   animation-duration: 450ms;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
@@ -251,9 +279,12 @@ body {
 /*
   Black-and-white film grain on the background canvas only: a tiny generated noise tile (no image
   file, no animation) layered behind all content, so the page reads as a surface rather than flat
-  black while cards, panels and photos stay clean.
+  black while cards, panels and photos stay clean. The specks carry their own transparency (light
+  specks on dark, dark on light) instead of using a blend mode, which iPhone Safari ignores on these
+  layers and would otherwise show as heavy static.
 */
-:root { --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncR type='linear' slope='2.4' intercept='-0.7'/><feFuncG type='linear' slope='2.4' intercept='-0.7'/><feFuncB type='linear' slope='2.4' intercept='-0.7'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+:root { --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  4 0 0 0 -2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+[data-theme="light"] { --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  4 0 0 0 -2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
 body::before {
   content: "";
   position: fixed;
@@ -262,7 +293,6 @@ body::before {
   pointer-events: none;
   background-image: var(--noise);
   background-size: 220px 220px;
-  mix-blend-mode: soft-light;
   opacity: var(--grain);
 }
 
@@ -278,7 +308,6 @@ body::before {
   pointer-events: none;
   background-image: var(--noise);
   background-size: 220px 220px;
-  mix-blend-mode: soft-light;
   opacity: var(--grain);
 }
 .grain-content { position: relative; z-index: 1; }

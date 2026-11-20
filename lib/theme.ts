@@ -34,3 +34,9 @@ export function toggleTheme(): Theme {
 
 /** Inline no-flash script; runs before hydration. Built from the constants above. */
 export const themeScript = `try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});document.documentElement.dataset.theme=t==="light"?"light":${JSON.stringify(DEFAULT_THEME)}}catch(e){document.documentElement.dataset.theme=${JSON.stringify(DEFAULT_THEME)}}`;
+
+/**
+ * Inline script: a refresh starts at the top of the page. Browsers (Safari most of all) otherwise put
+ * you back where you were; back/forward still restores your place.
+ */
+export const reloadTopScript = `try{var n=performance.getEntriesByType("navigation")[0];if(n&&n.type==="reload"){history.scrollRestoration="manual";window.scrollTo(0,0);addEventListener("load",function(){window.scrollTo(0,0);setTimeout(function(){history.scrollRestoration="auto"},0)})}}catch(e){}`;

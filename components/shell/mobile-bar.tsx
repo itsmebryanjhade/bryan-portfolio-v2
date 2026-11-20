@@ -165,13 +165,14 @@ export function MobileBar() {
       {mounted && (
         // While closing, the panel stays briefly for its slide-out, inert and no longer a dialog.
         <div className="fixed inset-0 z-50 lg:hidden" onKeyDown={onKeyDown} inert={!open || undefined}>
-          <div className={`${open ? "sheet-fade" : "sheet-fade-out"} absolute inset-0 bg-bg/60`} onClick={() => setOpen(false)} aria-hidden="true" />
+          {/* touch-none: iOS ignores overflow:hidden on the page, so a swipe on the backdrop would scroll it */}
+          <div className={`${open ? "sheet-fade" : "sheet-fade-out"} absolute inset-0 touch-none bg-bg/60`} onClick={() => setOpen(false)} aria-hidden="true" />
           <div
             ref={dialogRef}
             role={open ? "dialog" : undefined}
             aria-modal={open ? "true" : undefined}
             aria-label="Site menu"
-            className={`${open ? "sheet-slide" : "sheet-slide-out"} grain-bg absolute bottom-2.5 left-2.5 top-2.5 flex w-[min(300px,calc(100vw-48px))] flex-col gap-5 overflow-y-auto rounded-[22px] border border-border bg-panel p-2.5 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.6)]`}
+            className={`${open ? "sheet-slide" : "sheet-slide-out"} grain-bg absolute bottom-2.5 left-2.5 top-2.5 flex w-[min(300px,calc(100vw-48px))] flex-col gap-5 overflow-y-auto overscroll-contain rounded-[22px] border border-border bg-panel p-2.5 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.6)]`}
           >
             <div className="grain-content flex items-center justify-between pl-2">
               {/* First names only, like the sidebar; the full name lives in the hero. */}

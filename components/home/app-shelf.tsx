@@ -184,20 +184,6 @@ function usePrefersReducedMotion() {
   );
 }
 
-const WIDE_QUERY = "(min-width: 640px)";
-/** True from tablet width up; the server and first paint assume the laptop layout. */
-function useIsWide() {
-  return useSyncExternalStore(
-    (cb) => {
-      if (typeof window.matchMedia !== "function") return () => {};
-      const mq = window.matchMedia(WIDE_QUERY);
-      mq.addEventListener("change", cb);
-      return () => mq.removeEventListener("change", cb);
-    },
-    () => typeof window.matchMedia !== "function" || window.matchMedia(WIDE_QUERY).matches,
-    () => true,
-  );
-}
 
 /**
  * Phones: a vertical deck. The front card sits full width in the middle; the one before peeks out
@@ -246,7 +232,6 @@ export function AppShelf({ items }: { items: ShelfItem[] }) {
   const reduce = usePrefersReducedMotion();
   const n = items.length;
   const { ref: frameRef, scale } = useFitScale(STAGE_W);
-  const wide = useIsWide();
 
   useEffect(() => {
     if (paused || reduce) return;
@@ -284,28 +269,39 @@ export function AppShelf({ items }: { items: ShelfItem[] }) {
           setTop((t) => (t + (dx < 0 ? 1 : -1) + n) % n);
         }}
         ref={frameRef}
-        style={wide ? { height: STAGE_H * scale } : undefined}
-        className={`relative block touch-pan-y ${wide ? "" : "h-[480px]"}`}
+        // Phone deck vs laptop fan is chosen in CSS (sm:), so the first paint is already right on a
+        // phone; JS only supplies the laptop fan's fit-to-width scale.
+        style={{ "--stage-h": `${STAGE_H * scale}px`, "--s": scale } as React.CSSProperties}
+        className="relative block h-[480px] touch-pan-y sm:h-[var(--stage-h)]"
       >
         {/* Laptops: the fanned hand, laid out at full size and scaled down if the column is narrower.
             Phones: a vertical deck at full card size (see deckPose). */}
         <div
-          className={wide ? "absolute left-1/2 top-0 origin-top" : "absolute inset-0"}
-          style={wide ? { width: STAGE_W, height: STAGE_H, transform: `translateX(-50%) scale(${scale})` } : undefined}
+          className="absolute inset-0 sm:inset-auto sm:left-1/2 sm:top-0 sm:h-[330px] sm:w-[640px] sm:origin-top sm:[transform:translateX(-50%)_scale(var(--s))]"
         >
         {items.map((item, i) => {
           let offset = (i - top + n) % n;
           if (offset > n / 2) offset -= n;
           const isTop = offset === 0;
-          const p = wide ? fanPose(offset, lean === i) : deckPose(offset);
+          const fan = fanPose(offset, lean === i);
+          const deck = deckPose(offset);
           return (
             <article
               key={item.project.slug}
               aria-label={item.project.title}
               onMouseEnter={() => setLean(i)}
               onMouseLeave={() => setLean((v) => (v === i ? null : v))}
-              style={{ ...p, transformOrigin: wide ? "50% 100%" : "50% 50%", transition: `transform 800ms ${EASE}, filter 800ms ${EASE}` }}
-              className={`absolute left-1/2 motion-reduce:!transition-none ${wide ? "top-4 h-[250px] w-[420px]" : "top-1/2 h-[300px] w-[94%]"}`}
+              style={
+                {
+                  "--pose-deck": deck.transform,
+                  "--pose-fan": fan.transform,
+                  "--shade-deck": deck.filter,
+                  "--shade-fan": fan.filter,
+                  zIndex: fan.zIndex,
+                  transition: `transform 800ms ${EASE}, filter 800ms ${EASE}`,
+                } as React.CSSProperties
+              }
+              className="absolute left-1/2 top-1/2 h-[300px] w-[94%] origin-center [filter:var(--shade-deck)] [transform:var(--pose-deck)] motion-reduce:!transition-none sm:top-4 sm:h-[250px] sm:w-[420px] sm:origin-bottom sm:[filter:var(--shade-fan)] sm:[transform:var(--pose-fan)]"
             >
               {/* soft colour glow behind the card */}
               <span
