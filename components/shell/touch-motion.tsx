@@ -3,79 +3,76 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
+/** How long a tapped photo stays in colour before it fades back to black and white. */
+export const LIT_MS = 5000;
+
+/** The nearest hover group around `target` that holds a colour-in photo (`.group-hover:grayscale-0`). */
+function photoGroup(target: EventTarget | null): HTMLElement | null {
+  let el = target instanceof Element ? target.closest<HTMLElement>(".group") : null;
+  while (el) {
+    if (el.querySelector(".group-hover\\:grayscale-0")) return el;
+    el = el.parentElement?.closest<HTMLElement>(".group") ?? null;
+  }
+  return null;
+}
+
 /**
  * Phones have no hover, so the site's black-and-white → colour motif would never play there. On touch
- * screens this marks every hover group that has a colour-in (`.group-hover:grayscale-0` inside) with
- * `data-inview` while it sits in the middle band of the screen; globals.css turns that into the same
- * colour-in hover gives on a laptop. Mouse devices are left alone. Renders nothing.
+ * screens, tapping a photo marks its hover group with `data-lit` for {@link LIT_MS}; globals.css turns
+ * that into the same colour-in hover gives on a laptop, and the photo fades back to black and white
+ * when it's removed. Photos inside links react to the click, after Safari has already decided the tap
+ * (anything that starts animating under the finger before that can make iPhone Safari drop a link
+ * tap); plain photos react to the finger lifting, since Safari sends them no click. Mouse devices are
+ * left alone. Renders nothing.
  */
 export function TouchMotion() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (typeof IntersectionObserver === "undefined" || !window.matchMedia?.("(hover: none)").matches) return;
-    // A group colours in while it sits in the middle band of the screen. Groups near the very top or
-    // bottom of a page can never scroll into that band, so once the page can't scroll any further
-    // their way, they colour in whenever they're fully on screen.
-    const inBand = new Set<Element>();
-    const onScreen = new Set<Element>();
-    const update = (el: Element) => {
-      let on = inBand.has(el);
-      if (!on && onScreen.has(el)) {
-        const r = el.getBoundingClientRect();
-        const atEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
-        const atStart = window.scrollY <= 4;
-        on = (atEnd && r.top > window.innerHeight / 2) || (atStart && r.bottom < window.innerHeight / 2);
-      }
-      if (on) (el as HTMLElement).dataset.inview = "";
-      else delete (el as HTMLElement).dataset.inview;
+    if (!window.matchMedia?.("(hover: none)").matches) return;
+    const timers = new Map<HTMLElement, number>();
+    const light = (group: HTMLElement) => {
+      group.dataset.lit = "";
+      clearTimeout(timers.get(group));
+      timers.set(
+        group,
+        window.setTimeout(() => {
+          delete group.dataset.lit;
+          timers.delete(group);
+        }, LIT_MS),
+      );
     };
-    const track = (set: Set<Element>) => (entries: IntersectionObserverEntry[]) => {
-      for (const e of entries) {
-        if (e.isIntersecting) set.add(e.target);
-        else set.delete(e.target);
-        update(e.target);
-      }
+    const isLink = (group: HTMLElement) => !!(group.closest("a, button") || group.querySelector("a, button"));
+    // Photos inside links or buttons: on the click, which Safari fires for those once the tap is decided.
+    const onClick = (e: MouseEvent) => {
+      const group = photoGroup(e.target);
+      if (group && isLink(group)) light(group);
     };
-    // the middle ~third of the screen
-    const io = new IntersectionObserver(track(inBand), { rootMargin: "-32% 0px -32% 0px" });
-    const whole = new IntersectionObserver(track(onScreen), { threshold: 0.9 });
-    let frame = 0;
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        onScreen.forEach(update);
-      });
+    // Plain photos: iPhone Safari sends no click for a tap on something that isn't a link or button, so
+    // read the tap from the finger itself: down and up in about the same spot, quickly (not a scroll).
+    let down: { x: number; y: number; t: number } | null = null;
+    const onDown = (e: PointerEvent) => {
+      down = e.pointerType === "mouse" ? null : { x: e.clientX || 0, y: e.clientY || 0, t: Date.now() };
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    const seen = new WeakSet<Element>();
-    const scan = () => {
-      document.querySelectorAll(".group:has(.group-hover\\:grayscale-0)").forEach((el) => {
-        if (seen.has(el)) return;
-        seen.add(el);
-        io.observe(el);
-        whole.observe(el);
-      });
+    const onUp = (e: PointerEvent) => {
+      const start = down;
+      down = null;
+      if (!start || Date.now() - start.t > 600) return;
+      if (Math.hypot((e.clientX || 0) - start.x, (e.clientY || 0) - start.y) > 10) return;
+      const group = photoGroup(e.target);
+      if (group && !isLink(group)) light(group);
     };
-    scan();
-    // Pages render and reveal in pieces, so pick up groups that arrive later too.
-    let queued = 0;
-    const mo = new MutationObserver(() => {
-      if (queued) return;
-      queued = window.setTimeout(() => {
-        queued = 0;
-        scan();
-      }, 150);
-    });
-    mo.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("click", onClick);
+    document.addEventListener("pointerdown", onDown, { passive: true });
+    document.addEventListener("pointerup", onUp, { passive: true });
     return () => {
-      io.disconnect();
-      whole.disconnect();
-      mo.disconnect();
-      clearTimeout(queued);
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("click", onClick);
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("pointerup", onUp);
+      timers.forEach((id, group) => {
+        clearTimeout(id);
+        delete group.dataset.lit;
+      });
     };
   }, [pathname]);
 

@@ -876,9 +876,9 @@
     "semantic_hash": ""
   },
   "components/shell/touch-motion.tsx": {
-    "mtime": 1795161817.6251402,
-    "seen": 1795163355.2467573,
-    "ast_hash": "7d74ce8f82b089060649fe238381bd04",
+    "mtime": 1795182466.5780082,
+    "seen": 1795182580.091642,
+    "ast_hash": "5dd5035d8d948f78e194eaabb001491e",
     "semantic_hash": ""
   },
   "components/shell/nav-feedback.test.tsx": {
@@ -909,6 +909,12 @@
     "mtime": 1795177752.4261036,
     "seen": 1795177767.8918786,
     "ast_hash": "afc0e1f1ef2000902b3ee2ac2322e565",
+    "semantic_hash": ""
+  },
+  "components/shell/touch-motion.test.tsx": {
+    "mtime": 1795182488.897871,
+    "seen": 1795182580.0916388,
+    "ast_hash": "3f0e1f944b86ab162c6d662097f47449",
     "semantic_hash": ""
   }
 }

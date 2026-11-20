@@ -252,12 +252,14 @@ html[data-leaving] main {
 /*
   Touch screens (no hover). Tailwind only applies hover styles where a real hover exists, so on phones
   the same effects are driven by other signals:
-  - colour-in: a group in the middle of the screen gets [data-inview] (components/shell/touch-motion.tsx)
-  - tap to play: a gear tile tapped on gets [data-tapped] (components/gear/gear-grid.tsx)
+  - colour-in: photos stay black and white; a tapped one gets [data-lit] for 5s and shows its colour,
+    then fades back (components/shell/touch-motion.tsx)
+  - tap to play: a gear tile tapped on gets [data-tapped] (components/gear/gear-grid.tsx), and stays in
+    colour while it plays
   - press: gear tiles dip slightly under the finger (links don't: see below).
 */
 @media (hover: none) {
-  .group[data-inview] .group-hover\:grayscale-0 { --tw-grayscale: grayscale(0%); }
+  .group:is([data-lit], [data-tapped]) .group-hover\:grayscale-0 { --tw-grayscale: grayscale(0%); }
   .group[data-tapped] .group-hover\:opacity-100 { opacity: 1; }
   .group[data-tapped] .group-hover\:opacity-70 { opacity: 0.7; }
   .group[data-tapped] .group-hover\:opacity-0 { opacity: 0; }
