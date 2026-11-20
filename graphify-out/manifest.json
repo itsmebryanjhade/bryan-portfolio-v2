@@ -168,9 +168,9 @@
     "semantic_hash": ""
   },
   "components/shell/mobile-bar.tsx": {
-    "mtime": 1795179073.7248335,
-    "seen": 1795179185.2200015,
-    "ast_hash": "e94f1ed36183c13376cf590cea8a4296",
+    "mtime": 1795179698.0270967,
+    "seen": 1795179829.7956796,
+    "ast_hash": "b608741b4c8ac377c0c530e9fb2d6a02",
     "semantic_hash": ""
   },
   "components/shell/nav-items.ts": {
