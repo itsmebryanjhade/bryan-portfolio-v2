@@ -145,8 +145,10 @@ describe("SidebarMark", () => {
   it("is decoration only: the surname, hidden from assistive tech", () => {
     const { container } = render(<SidebarMark />);
     const mark = container.querySelector(".sidebar-mark");
-    expect(mark).toHaveAttribute("aria-hidden", "true");
+    expect(mark?.closest("[aria-hidden='true']")).not.toBeNull();
     expect(mark?.textContent).toBe("Ebuan");
+    // cut off inside its own clipping layer, so it can't widen a scrolling panel
+    expect(mark?.parentElement).toHaveClass("sidebar-mark-clip");
   });
 });
 

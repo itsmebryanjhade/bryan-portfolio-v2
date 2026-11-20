@@ -105,6 +105,14 @@ describe("MobileBar", () => {
     expect(within(screen.getByRole("dialog")).getByRole("link", { name: /projects/i })).toHaveAttribute("aria-current", "page");
   });
 
+  it("scrolls the menu only up and down: the watermark poking past its edge can't drag it sideways", () => {
+    render(<MobileBar />);
+    fireEvent.click(screen.getByRole("button", { name: /open menu/i }));
+    const panel = screen.getByRole("dialog");
+    expect(panel.className).toMatch(/\boverflow-y-auto\b/);
+    expect(panel.className).toMatch(/\boverflow-x-hidden\b/);
+  });
+
   it("stays pinned to the top while the page scrolls", () => {
     render(<MobileBar />);
     expect(screen.getByRole("banner").className).toMatch(/sticky top-0/);

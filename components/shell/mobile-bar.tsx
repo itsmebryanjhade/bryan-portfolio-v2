@@ -172,7 +172,7 @@ export function MobileBar() {
             role={open ? "dialog" : undefined}
             aria-modal={open ? "true" : undefined}
             aria-label="Site menu"
-            className={`${open ? "sheet-slide" : "sheet-slide-out"} grain-bg absolute bottom-2.5 left-2.5 top-2.5 flex w-[min(300px,calc(100vw-48px))] flex-col gap-5 overflow-y-auto overscroll-contain rounded-[22px] edge-lit isolate p-2.5`}
+            className={`${open ? "sheet-slide" : "sheet-slide-out"} grain-bg absolute bottom-2.5 left-2.5 top-2.5 flex w-[min(300px,calc(100vw-48px))] flex-col gap-5 overflow-y-auto overflow-x-hidden overscroll-contain rounded-[22px] edge-lit isolate p-2.5`}
           >
             <SidebarMark />
             <div className="grain-content flex items-center justify-between pl-2">
@@ -213,8 +213,10 @@ export function MobileBar() {
 
             {/* Footer, matching the sidebar: what I'm taking on with a Say hi button, one fading
                 line, then my local time beside round GitHub, LinkedIn and theme buttons. */}
-            <div className="sheet-row grain-content -mx-2.5 -mb-2.5 mt-auto" style={{ animationDelay: "320ms" }}>
-              <div className="flex items-center justify-between gap-3 px-4 pb-4 pt-1">
+            {/* No side bleed (negative margins): in the scrolling panel Safari counted it as extra width and let
+                the menu drag sideways. The inner padding is 10px smaller instead, so it looks the same. */}
+            <div className="sheet-row grain-content -mb-2.5 mt-auto" style={{ animationDelay: "320ms" }}>
+              <div className="flex items-center justify-between gap-3 px-1.5 pb-4 pt-1">
                 <div className="min-w-0">
                   <p className="text-[12px] leading-4 text-faint">Taking on</p>
                   <p className="mt-0.5 flex items-center gap-1.5 text-[14px] font-semibold leading-5 text-fg">
@@ -232,8 +234,8 @@ export function MobileBar() {
                   Say hi
                 </button>
               </div>
-              <div aria-hidden="true" className="mx-4 h-px bg-gradient-to-r from-transparent via-border-hover to-transparent" />
-              <div className="flex items-center justify-between gap-3 px-4 pb-3 pt-3">
+              <div aria-hidden="true" className="mx-1.5 h-px bg-gradient-to-r from-transparent via-border-hover to-transparent" />
+              <div className="flex items-center justify-between gap-3 px-1.5 pb-3 pt-3">
                 <ManilaStatus compact />
                 <div data-variant="drawer" className="flex items-center gap-1.5">
                   {profile.socials.map((s) => {
@@ -244,7 +246,9 @@ export function MobileBar() {
                         href={s.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-muted active:bg-hover"
+                        // relative: keeps the screen-reader-only label inside the link, so Safari doesn't
+                        // count it toward the menu's width (it let the menu drag sideways)
+                        className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-muted active:bg-hover"
                       >
                         {Icon ? <Icon /> : <span aria-hidden="true">{"↗"}</span>}
                         <span className="sr-only">

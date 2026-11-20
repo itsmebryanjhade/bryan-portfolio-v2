@@ -367,9 +367,18 @@ body::before {
 /* The panel's watermark (SidebarMark): a giant upright "Ebuan" running up the right edge, cut off by the
    border, strongest near the footer and fading out toward the top. It sits under all content (z -1 inside the isolated panel)
    but over the slab, so the panel's grain lands on it too. */
+/* The watermark's own clipping layer, exactly the panel's size: the letters are cut off here, so they
+   never widen the phone menu's scroll area (which would let it be dragged sideways). */
+.sidebar-mark-clip {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
 .sidebar-mark {
   position: absolute;
-  z-index: -1;
   right: -0.3em;
   bottom: 7.5rem; /* in the open space between the nav and the footer */
   pointer-events: none;

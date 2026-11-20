@@ -46,8 +46,10 @@ export function trailing(item: NavItem): { count: number } | "soon" | null {
 
 const SOCIAL_ICONS: Record<string, () => React.JSX.Element> = { GitHub: GitHubIcon, LinkedIn: LinkedInIcon };
 
+// relative: keeps each link's screen-reader-only label inside it (Safari otherwise counts that hidden
+// text toward the phone menu's width, letting the menu drag sideways).
 const iconButtonBase =
-  "inline-flex items-center justify-center rounded-full border border-border text-muted transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg";
+  "relative inline-flex items-center justify-center rounded-full border border-border text-muted transition-colors duration-150 hover:border-border-hover hover:bg-hover hover:text-fg";
 
 function NavList({
   label,
@@ -250,14 +252,15 @@ export function Sidebar({
 /**
  * A giant, faint surname ("Ebuan", the hero's italic word, the one part of the name the sidebar doesn't
  * show) running up the panel's right edge, cut off by the border and fading out toward the top.
- * Decoration only: hidden from assistive tech, never selectable or clickable. Needs an isolated,
- * overflow-hidden panel to sit in.
+ * Decoration only: hidden from assistive tech, never selectable or clickable. It is cut off by its own
+ * panel-sized clipping layer, so it never makes a scrolling panel (the phone menu) wider than it is.
+ * Needs an isolated panel to sit in.
  */
 export function SidebarMark() {
   const surname = profile.name.split(" ").at(-1);
   return (
-    <span aria-hidden="true" className="sidebar-mark">
-      {surname}
+    <span aria-hidden="true" className="sidebar-mark-clip">
+      <span className="sidebar-mark">{surname}</span>
     </span>
   );
 }
