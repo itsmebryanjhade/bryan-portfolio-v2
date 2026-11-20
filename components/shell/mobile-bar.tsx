@@ -46,7 +46,7 @@ function SheetGroup({ label, items, pathname, start }: { label: string; items: N
               <Link
                 href={item.href}
                 aria-current={current ? "page" : undefined}
-                className={`relative flex min-h-11 items-center gap-3 rounded-[12px] px-3 text-[16px] font-medium transition-colors duration-150 ${
+                className={`relative flex min-h-[42px] items-center gap-3 rounded-[12px] px-3 text-[16px] font-medium transition-colors duration-150 ${
                   current ? "lit-groove border font-semibold text-fg" : "border border-transparent text-muted active:bg-hover/60"
                 }`}
               >
@@ -172,7 +172,7 @@ export function MobileBar() {
             role={open ? "dialog" : undefined}
             aria-modal={open ? "true" : undefined}
             aria-label="Site menu"
-            className={`${open ? "sheet-slide" : "sheet-slide-out"} grain-bg absolute bottom-2.5 left-2.5 top-2.5 flex w-[min(300px,calc(100vw-48px))] flex-col gap-5 overflow-y-auto overflow-x-hidden overscroll-contain rounded-[22px] edge-lit isolate p-2.5`}
+            className={`${open ? "sheet-slide" : "sheet-slide-out"} grain-bg absolute bottom-2.5 left-2.5 top-2.5 flex w-[min(300px,calc(100vw-48px))] flex-col gap-3.5 overflow-y-auto overflow-x-hidden overscroll-contain rounded-[22px] edge-lit isolate p-2.5`}
           >
             <SidebarMark />
             <div className="grain-content flex items-center justify-between pl-2">
@@ -206,7 +206,7 @@ export function MobileBar() {
               Search
             </button>
 
-            <nav aria-label="Primary" className="grain-content flex flex-col gap-4">
+            <nav aria-label="Primary" className="grain-content flex flex-col gap-3">
               <SheetGroup label="Portfolio" items={portfolio} pathname={pathname} start={1} />
               <SheetGroup label="Explore" items={explore} pathname={pathname} start={1 + portfolio.length} />
             </nav>
@@ -215,8 +215,8 @@ export function MobileBar() {
                 line, then my local time beside round GitHub, LinkedIn and theme buttons. */}
             {/* No side bleed (negative margins): in the scrolling panel Safari counted it as extra width and let
                 the menu drag sideways. The inner padding is 10px smaller instead, so it looks the same. */}
-            <div className="sheet-row grain-content -mb-2.5 mt-auto" style={{ animationDelay: "320ms" }}>
-              <div className="flex items-center justify-between gap-3 px-1.5 pb-4 pt-1">
+            <div className="sheet-row grain-content mt-auto" style={{ animationDelay: "320ms" }}>
+              <div className="flex items-center justify-between gap-3 px-1.5 pb-3">
                 <div className="min-w-0">
                   <p className="text-[12px] leading-4 text-faint">Taking on</p>
                   <p className="mt-0.5 flex items-center gap-1.5 text-[14px] font-semibold leading-5 text-fg">
@@ -235,7 +235,7 @@ export function MobileBar() {
                 </button>
               </div>
               <div aria-hidden="true" className="mx-1.5 h-px bg-gradient-to-r from-transparent via-border-hover to-transparent" />
-              <div className="flex items-center justify-between gap-3 px-1.5 pb-3 pt-3">
+              <div className="flex items-center justify-between gap-3 px-1.5 pb-2.5 pt-2.5">
                 <ManilaStatus compact />
                 <div data-variant="drawer" className="flex items-center gap-1.5">
                   {profile.socials.map((s) => {
