@@ -34,15 +34,18 @@ export default async function BlogPostPage({ params }: Props) {
       <p className="mt-2 text-sm text-faint">
         {post.date} · {readingTime(post.slug)}
       </p>
-      <Image
-        src={post.image}
-        alt={post.imageAlt}
-        width={1600}
-        height={900}
-        loading="eager"
-        sizes="(min-width: 640px) 608px, calc(100vw - 40px)"
-        className="mt-8 aspect-video w-full rounded-card border border-border object-cover object-top"
-      />
+      {/* Black and white like the blog grid; hover (or a tap, via TouchMotion) brings the colour back. */}
+      <div className="group mt-8 overflow-hidden rounded-card border border-border">
+        <Image
+          src={post.image}
+          alt={post.imageAlt}
+          width={1600}
+          height={900}
+          loading="eager"
+          sizes="(min-width: 640px) 608px, calc(100vw - 40px)"
+          className="block aspect-video w-full object-cover object-center grayscale transition-[filter] duration-700 group-hover:grayscale-0 motion-reduce:transition-none"
+        />
+      </div>
       <div className="mt-10 space-y-5 text-[15px] leading-8 text-muted [&_h2]:pt-6 [&_h2]:text-xl [&_h2]:font-medium [&_h2]:text-fg [&_strong]:text-fg">
         <Post />
       </div>

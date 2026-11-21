@@ -12,8 +12,8 @@ describe("blog page", () => {
     expect(screen.getByRole("link", { name: /fifty photos, one zip/i })).toHaveAttribute("href", "/blog/fifty-photos-one-zip");
     expect(screen.getByRole("link", { name: /a photobooth of our own/i })).toHaveAttribute("href", "/blog/a-photobooth-of-our-own");
     expect(screen.getByRole("link", { name: /wrong strand, right direction/i })).toHaveAttribute("href", "/blog/wrong-strand-right-direction");
-    expect(screen.getByRole("img", { name: /students using the halalan 2026 voting system/i })).toHaveAttribute("src", expect.stringContaining(encodeURIComponent("/blog/halalan-2026-voting.png")));
-    expect(screen.getByRole("img", { name: /chat window behind a code editor/i })).toHaveAttribute("src", "/blog/new-tools-cover.svg");
+    expect(screen.getByRole("img", { name: /tangled red thread/i })).toHaveAttribute("src", expect.stringContaining(encodeURIComponent("/blog/wrong-strand-cover.webp")));
+    expect(screen.getByRole("img", { name: /retro beige computer/i })).toHaveAttribute("src", expect.stringContaining(encodeURIComponent("/blog/new-tools-retro.webp")));
     expect(within(screen.getByRole("list", { name: "Posts" })).getAllByRole("listitem")[0]).toHaveTextContent(/wrong strand, right direction/i);
     expect(screen.getByRole("img", { name: /iot conference philippines 2026/i })).toHaveAttribute("src", expect.stringContaining(encodeURIComponent("/blog/iot-conference-ph-2026.webp")));
     expect(screen.queryByText("First posts coming soon")).toBeNull();

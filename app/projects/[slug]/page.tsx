@@ -91,7 +91,7 @@ function Stage({ project }: { project: Project }) {
               height={1000}
               priority
               sizes="(min-width: 768px) 640px, 100vw"
-              className={`block h-auto w-full grayscale transition-[filter] duration-1000 ${EASE} group-hover:grayscale-0 motion-reduce:transition-none`}
+              className="block h-auto w-full"
             />
           </div>
         </Morph>
@@ -145,7 +145,7 @@ function NextProject({ project }: { project: Project }) {
             alt=""
             fill
             sizes="96px"
-            className="object-cover object-top grayscale transition-[filter] duration-500 group-hover:grayscale-0"
+            className="object-cover object-top"
           />
         </span>
       </Morph>

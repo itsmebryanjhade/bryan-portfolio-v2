@@ -20,7 +20,7 @@ export function PostGrid({ posts }: { posts: Post[] }) {
                 alt={p.imageAlt}
                 fill
                 sizes="(min-width: 768px) 230px, 50vw"
-                className="object-cover object-top grayscale transition-[filter,transform,translate,scale,rotate] duration-700 group-hover:scale-[1.03] group-hover:grayscale-0 motion-reduce:transition-none"
+                className="object-cover object-center grayscale transition-[filter,transform,translate,scale,rotate] duration-700 group-hover:scale-[1.03] group-hover:grayscale-0 motion-reduce:transition-none"
               />
             </span>
             <span className="mt-3 block text-[11px] text-faint sm:mt-4 sm:text-xs">

@@ -16,8 +16,8 @@ export const posts: Post[] = [
     title: "New Tools, Same Foundations",
     date: "Feb 2025",
     summary: "From copying Gemini replies into VS Code to building with Claude and Antigravity, while staying involved in the backend and testing the result.",
-    image: "/blog/new-tools-cover.svg",
-    imageAlt: "Illustration of a chat window behind a code editor full of colourful code.",
+    image: "/blog/new-tools-retro.webp",
+    imageAlt: "Pixel art of a retro beige computer showing code, beside a project notebook, a pencil and a cup of coffee.",
   },
   {
     slug: "my-first-hackathon-solo",
@@ -48,8 +48,8 @@ export const posts: Post[] = [
     title: "Wrong Strand, Right Direction",
     date: "Apr 2026",
     summary: "I didn't start in a tech strand, but I kept learning to code. That led to a photobooth, a photo framing tool, and a voting system used by more than 800 students.",
-    image: "/blog/halalan-2026-voting.png",
-    imageAlt: "Students using the Halalan 2026 voting system in the school computer lab.",
+    image: "/blog/wrong-strand-cover.webp",
+    imageAlt: "A tangled red thread drawn in pixels on the left, straightening into a real thread that leads to a laptop showing code.",
   },
 ];
 

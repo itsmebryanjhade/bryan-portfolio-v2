@@ -81,7 +81,7 @@ export function OmnaveDossier() {
               alt={screen.alt}
               fill
               sizes="200px"
-              className="object-cover object-top grayscale transition-[filter] duration-1000 ease-[cubic-bezier(.22,1,.36,1)] group-hover:grayscale-0 motion-reduce:transition-none"
+              className="object-cover object-top"
             />
           </div>
         </div>
